@@ -20,10 +20,10 @@ class IntrepidRASParser(Parser):
         LOCATION:       Unknown meaning (~30,000)
         SERIALNUMBER:   Believed to be the associated component's serial number (~29,000)
         ECID:           Unknown meaning (~20,000)
-        MESSAGE:        Descriptive error message (~415)
+        MESSAGE:        Descriptive error message (~31,000)
         NODE:           The node id associated with the event? (~33,000)
         PROCESSOR:      The processor id associated with the event? (~2,600)
-        PROCESSOR:      The processor id associated with the event? (~2,600
+        FLAGS:          Unknown (~2,000)
 
       Expects to find the Blue Gene/P RAS log in '../../log/BlueGeneRAS.log'
     """
@@ -65,7 +65,10 @@ class IntrepidRASParser(Parser):
         ]
 
 
-    def __parseDataAndDescription(self):
+    def __parseDataAndSummary(self):
+        """
+          Parse the log data and summary
+        """
 
         # Each entry is either 'None', in which case there is not really a set of possible values for the entry, or
         #   a set of all values found for that entry
@@ -109,12 +112,24 @@ class IntrepidRASParser(Parser):
                         logEntry = {}
                         for index in xrange(0, len(self.logKeys)):
 
-                            # Add this to the summary of the log
-                            if self.logSummary[self.logKeys[index]] is not None:
-                                self.logSummary[self.logKeys[index]].add(splitLine[index])
+                            if index < len(self.logKeys) - 1:
 
-                            # Add this to the log data
-                            logEntry[self.logKeys[index]] = splitLine[index]
+                                # Add this to the summary of the log
+                                if self.logSummary[self.logKeys[index]] is not None:
+                                    self.logSummary[self.logKeys[index]].add(splitLine[index])
+
+                                # Add this to the log data
+                                logEntry[self.logKeys[index]] = splitLine[index]
+
+                            else:
+
+                                # Join the entire message (the remaining tokens on the line) and add it
+                                message = ' '.join(splitLine[index:])
+                                if self.logSummary[self.logKeys[index]] is not None:
+                                    self.logSummary[self.logKeys[index]].add(message)
+                                logEntry[self.logKeys[index]] = message
+
+
                         self.log.append(logEntry)
                     else:
                         linesSkipped += 1
@@ -127,13 +142,12 @@ class IntrepidRASParser(Parser):
 
     def parse(self):
         """
-          Returns a dictionary describing the log format, with the list of constants possible for each entry or 'None'
-            type for entries that contain arbitrary values.
+          Returns a list of dictionaries, representing the entries of the parsed log
         """
 
         # Only build data structures if we need to
         if self.log is None:
-            self.__parseDataAndDescription()
+            self.__parseDataAndSummary()
 
         return self.log
 
@@ -146,7 +160,7 @@ class IntrepidRASParser(Parser):
 
         # Only build data structure if we need to
         if self.logSummary is None:
-            self.__parseDataAndDescription()
+            self.__parseDataAndSummary()
 
         return self.logSummary
 
@@ -169,5 +183,5 @@ if __name__ == '__main__':
     for key in summary:
         if summary[key] is not None:
             print key + ": " + str(len(summary[key]))
-    for logEntry in log:
-        pprint(logEntry)
+    for i in xrange(0,10):
+        pprint(log[i])

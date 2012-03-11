@@ -12,7 +12,7 @@ class Parser(object):
 
     def parse(self):
         """
-          Constructs the parser, opening the log file and returns list of log entry dictionaries defined by the log format.
+          Returns a list of dictionaries, representing the entries of the parsed log
         """
         raise NotImplementedError("Implement 'parse' in concrete subclass!")
 
