@@ -1,6 +1,6 @@
 Nimbos
 ======
-Prediction framework for Hadoop clusters
+Prediction research framework for Hadoop clusters.
 
 ## Project structure
   * <code>/log</code> contains the log files to parse, see parsers for expected format
