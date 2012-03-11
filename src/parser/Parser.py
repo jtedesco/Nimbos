@@ -22,4 +22,4 @@ class Parser(object):
           Returns a dictionary describing/summarizing the log format, with the list of constants possible for each entry
             or 'None' type for entries that contain arbitrary values.
         """
-        raise NotImplementedError("Implement 'describe' in concrete subclass!")
+        raise NotImplementedError("Implement 'summarize' in concrete subclass!")
