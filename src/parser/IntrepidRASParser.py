@@ -11,7 +11,7 @@ class IntrepidRASParser(Parser):
 
         RECID:          Unique identifier for the log event (~1.5 million)
         MSG_ID:         Unique identifier for the message (only 415 unique events)
-        COMPONENT:      The component producing the error ('KERNEL' in every entry) (7 total)
+        COMPONENT:      The component producing the error  (7)
         SUBCOMPONENT:   The detailed component producing the error (DDR, cache, etc) (42 total)
         ERRCODE:        The full error code (199 total)
         SEVERITY:       The severity of the event (WARN/ERROR/INFO/FATAL)
@@ -73,21 +73,21 @@ class IntrepidRASParser(Parser):
         # Each entry is either 'None', in which case there is not really a set of possible values for the entry, or
         #   a set of all values found for that entry
         self.logSummary = {
-            'RECID':        None,
-            'MSG_ID':       set([]),
-            'COMPONENT':    set([]),
+            'RECID': None,
+            'MSG_ID': set([]),
+            'COMPONENT': set([]),
             'SUBCOMPONENT': set([]),
-            'ERRCODE':      set([]),
-            'SEVERITY':     set([]),
-            'EVENT_TIME':   None,
-            'FLAGS':        set([]),
-            'PROCESSOR':    set([]),
-            'NODE':         set([]),
-            'BLOCK':        set([]),
-            'LOCATION':     set([]),
+            'ERRCODE': set([]),
+            'SEVERITY': set([]),
+            'EVENT_TIME': None,
+            'FLAGS': set([]),
+            'PROCESSOR': set([]),
+            'NODE': set([]),
+            'BLOCK': set([]),
+            'LOCATION': set([]),
             'SERIALNUMBER': set([]),
-            'ECID':         set([]),
-            'MESSAGE':      set([])
+            'ECID': set([]),
+            'MESSAGE': set([])
         }
 
         # Simply a list of log entries
@@ -97,13 +97,11 @@ class IntrepidRASParser(Parser):
         lineNumber = 0
         linesSkipped = 0
         for line in self.logFile:
-
             # Skip empty & header lines
             line = line.strip()
             if len(line) > 0:
                 lineNumber += 1
                 if lineNumber >= 3:
-
                     # Add each entry that we're counting
                     splitLine = line.split()
 
@@ -111,9 +109,7 @@ class IntrepidRASParser(Parser):
                     if len(splitLine) > len(self.logKeys) and self.__isNumber(splitLine[0]):
                         logEntry = {}
                         for index in xrange(0, len(self.logKeys)):
-
                             if index < len(self.logKeys) - 1:
-
                                 # Add this to the summary of the log
                                 if self.logSummary[self.logKeys[index]] is not None:
                                     self.logSummary[self.logKeys[index]].add(splitLine[index])
@@ -122,13 +118,11 @@ class IntrepidRASParser(Parser):
                                 logEntry[self.logKeys[index]] = splitLine[index]
 
                             else:
-
                                 # Join the entire message (the remaining tokens on the line) and add it
                                 message = ' '.join(splitLine[index:])
                                 if self.logSummary[self.logKeys[index]] is not None:
                                     self.logSummary[self.logKeys[index]].add(message)
                                 logEntry[self.logKeys[index]] = message
-
 
                         self.log.append(logEntry)
                     else:
@@ -183,5 +177,5 @@ if __name__ == '__main__':
     for key in summary:
         if summary[key] is not None:
             print key + ": " + str(len(summary[key]))
-    for i in xrange(0,10):
+    for i in xrange(0, 10):
         pprint(log[i])
