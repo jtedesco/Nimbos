@@ -169,4 +169,5 @@ if __name__ == '__main__':
     for key in summary:
         if summary[key] is not None:
             print key + ": " + str(len(summary[key]))
-    pprint(log)
+    for logEntry in log:
+        pprint(logEntry)
