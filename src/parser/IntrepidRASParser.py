@@ -1,5 +1,5 @@
 from pprint import pprint
-from Parser import Parser
+from src.Parser import Parser
 
 __author__ = 'jon'
 
