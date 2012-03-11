@@ -1,4 +1,3 @@
-from pprint import pprint
 from src.Parser import Parser
 
 __author__ = 'jon'
@@ -177,5 +176,7 @@ if __name__ == '__main__':
     for key in summary:
         if summary[key] is not None:
             print key + ": " + str(len(summary[key]))
-    for i in xrange(0, 10):
-        pprint(log[i])
+    print summary['COMPONENT']
+    print summary['SUBCOMPONENT']
+    print summary['MSG_ID']
+    print summary['ERRCODE']
