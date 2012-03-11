@@ -1,6 +1,6 @@
 __author__ = 'jon'
 
-class PredictionStrategy(object):
+class FailurePredictor(object):
     """
       Acts as an interface for machine learning strategies to be used on log data for failure prediction. The interface
         expects users to add all learning examples before running the learning algorithm.
@@ -11,7 +11,7 @@ class PredictionStrategy(object):
           Constructs a prediction strategy object, containing empty example dictionary
         """
 
-        super(PredictionStrategy, self).__init__()
+        super(FailurePredictor, self).__init__()
 
         # The training examples for the model
         self.examples = {}
