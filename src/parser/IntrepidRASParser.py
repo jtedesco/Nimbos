@@ -1,3 +1,4 @@
+from pprint import pprint
 from Parser import Parser
 
 __author__ = 'jon'
@@ -168,4 +169,4 @@ if __name__ == '__main__':
     for key in summary:
         if summary[key] is not None:
             print key + ": " + str(len(summary[key]))
-    print log
+    pprint(log)
