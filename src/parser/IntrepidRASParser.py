@@ -64,7 +64,7 @@ class IntrepidRASParser(Parser):
         ]
 
 
-    def __parseDataAndSummary(self):
+    def __parseLogData(self):
         """
           Parse the log data and summary
         """
@@ -105,7 +105,7 @@ class IntrepidRASParser(Parser):
                     splitLine = line.split()
 
                     # Check that the first entry is an integer
-                    if len(splitLine) > len(self.logKeys) and self.__isNumber(splitLine[0]):
+                    if len(splitLine) > len(self.logKeys) and self.isNumber(splitLine[0]):
                         logEntry = {}
                         for index in xrange(0, len(self.logKeys)):
                             if index < len(self.logKeys) - 1:
@@ -140,7 +140,7 @@ class IntrepidRASParser(Parser):
 
         # Only build data structures if we need to
         if self.log is None:
-            self.__parseDataAndSummary()
+            self.__parseLogData()
 
         return self.log
 
@@ -153,12 +153,12 @@ class IntrepidRASParser(Parser):
 
         # Only build data structure if we need to
         if self.logSummary is None:
-            self.__parseDataAndSummary()
+            self.__parseLogData()
 
         return self.logSummary
 
 
-    def __isNumber(self, string):
+    def isNumber(self, string):
         """
           Helper function to check whether a string represents a number
         """
