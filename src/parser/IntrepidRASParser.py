@@ -27,6 +27,8 @@ class IntrepidRASParser(Parser):
       Expects to find the Blue Gene/P RAS log in '../../log/BlueGeneRAS.log'
     """
 
+    LOG_FILENAME = 'BlueGeneRAS.log'
+
 
     def __init__(self):
         """
@@ -37,7 +39,7 @@ class IntrepidRASParser(Parser):
         super(IntrepidRASParser, self).__init__()
 
         # The path & handle on the log file
-        self.logPath = self.logDirectoryPath + '/BlueGeneRAS.log'
+        self.logPath = self.logDirectoryPath + '/' + IntrepidRASParser.LOG_FILENAME
         self.logFile = open(self.logPath)
 
         # The log data and summarized description, lazily created
