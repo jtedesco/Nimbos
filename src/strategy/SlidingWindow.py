@@ -68,7 +68,7 @@ class SlidingWindow(PredictionStrategy):
             subWindowIndex = 0
 
             # Iterate across all sub-windows (or gracefully handle when we run out of data)
-            while subWindowIndex < len(self.numberOfSubWindows) and dataIndex < len(data):
+            while subWindowIndex < self.numberOfSubWindows and dataIndex < len(data):
                 subWindowData = []
                 nextTimestamp = datetime.strptime(data[dataIndex]['EVENT_TIME'], self.TIMESTAMP_FORMAT)
 
@@ -77,10 +77,13 @@ class SlidingWindow(PredictionStrategy):
                     subWindowData.append(data[dataIndex])
 
                     dataIndex += 1
-                    nextTimestamp = datetime.strptime(data[dataIndex]['EVENT_TIME'], self.TIMESTAMP_FORMAT)
+                    if dataIndex < len(data):
+                        nextTimestamp = datetime.strptime(data[dataIndex]['EVENT_TIME'], self.TIMESTAMP_FORMAT)
 
                 windowData.append(subWindowData)
                 subWindowIndex += 1
+
+                endSubWindowTimestamp += self.windowDelta
 
             windowedLogData.append(windowData)
 
