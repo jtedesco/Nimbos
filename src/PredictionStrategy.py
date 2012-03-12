@@ -11,7 +11,7 @@ class PredictionStrategy(object):
             @param  data    Some arbitrary training data
         """
 
-        raise NotImplementedError("Cannot call 'train', LearningStrategy is abstract!")
+        raise NotImplementedError("Cannot call 'train' on an abstract strategy object!")
 
 
     def train(self, examples):
@@ -20,7 +20,7 @@ class PredictionStrategy(object):
             @param  examples    Training examples, structured as a dictionary features -> label/value
         """
 
-        raise NotImplementedError("Cannot call 'train', LearningStrategy is abstract!")
+        raise NotImplementedError("Cannot call 'train' on an abstract strategy object!")
 
 
     def predict(self, features):
@@ -29,4 +29,4 @@ class PredictionStrategy(object):
             @param  features    The set of features to predict
         """
 
-        raise NotImplementedError("Cannot call 'predict', LearningStrategy is abstract!")
+        raise NotImplementedError("Cannot call 'predict' on an abstract strategy object!")
