@@ -15,3 +15,16 @@ class ComponentSlidingWindow(SlidingWindow):
         - number of events associated with each component
         - number of events associated with each sub-component
     """
+
+    def parseWindowedLogData(self, windowedLogData):
+        # TODO: Implement me!
+        super(ComponentSlidingWindow, self).parseWindowedLogData(windowedLogData)
+
+    def train(self, examples):
+        # TODO: Implement me!
+        super(ComponentSlidingWindow, self).train(examples)
+
+    def predict(self, features):
+        # TODO: Implement me!
+        super(ComponentSlidingWindow, self).predict(features)
+

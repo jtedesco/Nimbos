@@ -13,3 +13,18 @@ class EventLevelSlidingWindow(SlidingWindow):
         - number of ERROR events
         - number of FATAL events
     """
+
+    def parseWindowedLogData(self, windowedLogData):
+        # TODO: Implement me!
+        super(EventLevelSlidingWindow, self).parseWindowedLogData(windowedLogData)
+
+    def train(self, examples):
+        # TODO: Implement me!
+        super(EventLevelSlidingWindow, self).train(examples)
+
+    def predict(self, features):
+        # TODO: Implement me!
+        super(EventLevelSlidingWindow, self).predict(features)
+
+
+
