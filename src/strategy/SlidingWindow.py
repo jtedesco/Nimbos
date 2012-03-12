@@ -69,24 +69,33 @@ class SlidingWindow(PredictionStrategy):
             windowData = []
             subWindowIndex = 0
 
+            nextFirstEndSubWindowTimestamp = endSubWindowTimestamp
+
             # Iterate across all sub-windows (or gracefully handle when we run out of data)
-            while subWindowIndex < self.numberOfSubWindows and dataIndex < len(data):
+            innerDataIndex = dataIndex
+            while subWindowIndex < self.numberOfSubWindows and innerDataIndex < len(data):
                 subWindowData = []
-                nextTimestamp = datetime.strptime(data[dataIndex]['EVENT_TIME'], self.TIMESTAMP_FORMAT)
+                nextTimestamp = datetime.strptime(data[innerDataIndex]['EVENT_TIME'], self.TIMESTAMP_FORMAT)
 
                 # Iterate across all log entries in this sub window (or gracefully handle when we run out of data)
-                while nextTimestamp < endSubWindowTimestamp and dataIndex < len(data):
-                    subWindowData.append(data[dataIndex])
+                while nextTimestamp < endSubWindowTimestamp and innerDataIndex < len(data):
+                    subWindowData.append(data[innerDataIndex])
 
-                    dataIndex += 1
-                    if dataIndex < len(data):
-                        nextTimestamp = datetime.strptime(data[dataIndex]['EVENT_TIME'], self.TIMESTAMP_FORMAT)
+                    innerDataIndex += 1
+                    if innerDataIndex < len(data):
+                        nextTimestamp = datetime.strptime(data[innerDataIndex]['EVENT_TIME'], self.TIMESTAMP_FORMAT)
 
                 windowData.append(subWindowData)
                 subWindowIndex += 1
 
                 endSubWindowTimestamp += self.windowDelta
 
-            windowedLogData.append(windowData)
+            endSubWindowTimestamp = nextFirstEndSubWindowTimestamp + self.windowDelta
+            while dataIndex < len(data) and datetime.strptime(data[dataIndex]['EVENT_TIME'],
+                self.TIMESTAMP_FORMAT) < nextFirstEndSubWindowTimestamp:
+                dataIndex += 1
+
+            if len(windowData) >= self.numberOfSubWindows:
+                windowedLogData.append(windowData)
 
         return windowedLogData
