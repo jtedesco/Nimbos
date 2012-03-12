@@ -1,9 +1,18 @@
 __author__ = 'jon'
 
-class LearningStrategy(object):
+class PredictionStrategy(object):
     """
       Abstract class for failure prediction learning strategies.
     """
+
+    def parseTrainingData(self, data):
+        """
+          Parse training examples from training data
+            @param  data    Some arbitrary training data
+        """
+
+        raise NotImplementedError("Cannot call 'train', LearningStrategy is abstract!")
+
 
     def train(self, examples):
         """
