@@ -1,3 +1,5 @@
+import os
+
 __author__ = 'jon'
 
 class Parser(object):
@@ -7,7 +9,11 @@ class Parser(object):
 
 
     def __init__(self):
-        self.logDirectoryPath = '../../log'
+        # Find the project root
+        projectRoot = str(os.getcwd())
+        projectRoot = projectRoot[:projectRoot.find('Nimbos') + len('Nimbos')]
+
+        self.logDirectoryPath = projectRoot + '/log'
 
 
     def parse(self):
