@@ -1,3 +1,4 @@
+from datetime import timedelta
 import unittest
 from src.strategy.SlidingWindow import SlidingWindow
 
@@ -129,6 +130,7 @@ class SlidingWindowTest(unittest.TestCase):
         # Verify
         self.assertEqual(expectedWindowedData, actualWindowedData)
 
+
     def testParseExtendedLogWindows(self):
         """
           Tests that SlidingWindow correctly categorizes 6 adjacent sub-windows
@@ -137,12 +139,12 @@ class SlidingWindowTest(unittest.TestCase):
         # Setup
 
         # Expected data split by windows. The sub-window dividing lines are:
-        #   1) 2009-08-31-01.00.00.000000
-        #   2) 2009-08-31-06.00.00.000000
-        #   3) 2009-08-31-11.00.00.000000
-        #   4) 2009-08-31-16.00.00.000000
-        #   5) 2009-08-31-21.00.00.000000
-        #   6) 2009-09-01-01.00.00.000000
+        #   1.1) 2009-08-31-01.00.00.000000
+        #   1.2) 2009-08-31-06.00.00.000000
+        #   1.3) 2009-08-31-11.00.00.000000
+        #   1.4) 2009-08-31-16.00.00.000000
+        #   1.5) 2009-08-31-21.00.00.000000
+        #   2.1) 2009-09-01-01.00.00.000000
         expectedWindowedData = [
             [
                 [{
@@ -182,6 +184,76 @@ class SlidingWindowTest(unittest.TestCase):
                 }]
             ], [
                 [], [{
+                    'EVENT_TIME': '2009-09-01-07.00.00.000000',
+                    'number': 11
+                }]
+            ]
+        ]
+
+        # Test
+        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(SlidingWindowTest.mockLogData)
+
+        # Verify
+        self.assertEqual(expectedWindowedData, actualWindowedData)
+
+
+    def testParseExtendedModifiedIntervalLogWindows(self):
+        """
+          Tests that SlidingWindow correctly categorizes 6 adjacent sub-windows
+        """
+
+        # Setup
+        self.slidingWindowStrategy.windowDelta = timedelta(hours=4)
+
+        # Expected data split by windows. The sub-window dividing lines are:
+        #   1.1) 2009-08-31-01.00.00.000000
+        #   1.2) 2009-08-31-05.00.00.000000
+        #   1.3) 2009-08-31-09.00.00.000000
+        #   1.4) 2009-08-31-13.00.00.000000
+        #   1.5) 2009-08-31-17.00.00.000000
+        #   2.1) 2009-08-31-21.00.00.000000
+        #   2.2) 2009-09-01-01.00.00.000000
+        #   2.3) 2009-09-01-05.00.00.000000
+        #   2.4) 2009-09-01-07.00.00.000000 (the last entry)
+        expectedWindowedData = [
+            [
+                [{
+                    'EVENT_TIME': '2009-08-31-01.00.00.000000',
+                    'number': 1
+                }, {
+                    'EVENT_TIME': '2009-08-31-02.00.00.000000',
+                    'number': 2
+                }, {
+                    'EVENT_TIME': '2009-08-31-03.00.00.000000',
+                    'number': 3
+                }],
+                [],
+                [{
+                    'EVENT_TIME': '2009-08-31-11.00.00.000000',
+                    'number': 4
+                }, {
+                    'EVENT_TIME': '2009-08-31-12.00.00.000000',
+                    'number': 5
+                }],
+                [{
+                    'EVENT_TIME': '2009-08-31-13.05.00.000000',
+                    'number': 6
+                }, {
+                    'EVENT_TIME': '2009-08-31-13.15.00.000000',
+                    'number': 7
+                }, {
+                    'EVENT_TIME': '2009-08-31-13.23.00.000000',
+                    'number': 8
+                }],
+                []
+            ], [
+                [{
+                    'EVENT_TIME': '2009-08-31-22.00.00.000000',
+                    'number': 9
+                }, {
+                    'EVENT_TIME': '2009-09-01-00.00.00.000000',
+                    'number': 10
+                }], [], [{
                     'EVENT_TIME': '2009-09-01-07.00.00.000000',
                     'number': 11
                 }]
