@@ -39,6 +39,9 @@ class SlidingWindowTest(unittest.TestCase):
     }, {
         'EVENT_TIME': '2009-09-01-00.00.00.000000',
         'number': 10
+    }, {
+        'EVENT_TIME': '2009-09-01-07.00.00.000000',
+        'number': 11
     }]
 
 
@@ -121,7 +124,7 @@ class SlidingWindowTest(unittest.TestCase):
         ]
 
         # Test
-        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(SlidingWindowTest.mockLogData)
+        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(SlidingWindowTest.mockLogData[:-1])
 
         # Verify
         self.assertEqual(expectedWindowedData, actualWindowedData)
@@ -132,10 +135,6 @@ class SlidingWindowTest(unittest.TestCase):
         """
 
         # Setup
-        mockLogData = SlidingWindowTest.mockLogData + [{
-            'EVENT_TIME': '2009-09-01-07.00.00.000000',
-            'number': 11
-        }]
 
         # Expected data split by windows. The sub-window dividing lines are:
         #   1) 2009-08-31-01.00.00.000000
@@ -190,7 +189,7 @@ class SlidingWindowTest(unittest.TestCase):
         ]
 
         # Test
-        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(mockLogData)
+        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(SlidingWindowTest.mockLogData)
 
         # Verify
         self.assertEqual(expectedWindowedData, actualWindowedData)
