@@ -1,5 +1,5 @@
-from pprint import pprint
 from src.strategy.SlidingWindow import SlidingWindow
+from src.strategy.StrategyError import StrategyError
 
 __author__ = 'jon'
 
@@ -17,10 +17,33 @@ class EventLevelSlidingWindow(SlidingWindow):
 
 
     def parseWindowedLogData(self, windowedLogData):
-        pprint(windowedLogData)
+        """
+          Helper function to parse the windowed log data (log data properly divided into sliding windows for learning)
+            into training examples.
 
-        # TODO: Implement me!
-        super(EventLevelSlidingWindow, self).parseWindowedLogData(windowedLogData)
+            @param  windowedLogData The log data divided into sliding window format
+        """
+
+        # Handle case of invalid windowed log data
+        if windowedLogData is None or len(windowedLogData) <= 0:
+            return []
+
+        else:
+            trainingData = []
+
+            for window in windowedLogData:
+                # Throw an exception if there is 1 or 0 sub-windows in a window --  the strategy doesn't make sense
+                print window
+                if len(window) <= 1:
+                    raise StrategyError(
+                        'Error parsing windowed log data, found window with %d sub-windows!' % len(window))
+
+                for subWindow in window:
+                    for logEvent in subWindow:
+                        if 'SEVERITY' not in logEvent:
+                            raise  StrategyError('Error parsing windowed log data, could not find SEVERITY field!')
+
+            return trainingData
 
 
     def train(self, examples):

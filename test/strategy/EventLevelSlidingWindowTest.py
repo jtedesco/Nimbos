@@ -1,6 +1,7 @@
 from json import load
 import unittest
 from src.strategy.EventLevelSlidingWindow import EventLevelSlidingWindow
+from src.strategy.StrategyError import StrategyError
 
 __author__ = 'jon'
 
@@ -9,14 +10,16 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
       Unit tests for the SlidingWindow class
     """
 
+    def setUp(self):
+        self.eventLevelSlidingWindowStrategy = EventLevelSlidingWindow()
+
+
     def testEmpty(self):
         """
           Tests that no training data is returned when passed an empty log
         """
 
-        eventLevelSlidingWindowStrategy = EventLevelSlidingWindow()
-
-        actualTrainingData = eventLevelSlidingWindowStrategy.parseWindowedLogData([])
+        actualTrainingData = self.eventLevelSlidingWindowStrategy.parseWindowedLogData([])
 
         self.assertEqual(actualTrainingData, [])
 
@@ -26,27 +29,33 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
           Tests that no training data is returned when passed a null log
         """
 
-        eventLevelSlidingWindowStrategy = EventLevelSlidingWindow()
-
-        actualTrainingData = eventLevelSlidingWindowStrategy.parseWindowedLogData(None)
+        actualTrainingData = self.eventLevelSlidingWindowStrategy.parseWindowedLogData(None)
 
         self.assertEqual(actualTrainingData, [])
 
 
-    def testNone(self):
+    def testInvalid(self):
         """
           Tests that no training data is returned when passed an invalid log
         """
 
-        eventLevelSlidingWindowStrategy = EventLevelSlidingWindow()
+        try:
+            self.eventLevelSlidingWindowStrategy.parseWindowedLogData([[]])
+            self.fail('Trying to parse an invalid log should have thrown an exception!')
+        except StrategyError, error:
+            self.assertEqual(error.message, 'Error parsing windowed log data, found window with 0 sub-windows!')
 
-        actualTrainingData1 = eventLevelSlidingWindowStrategy.parseWindowedLogData([[]])
-        actualTrainingData2 = eventLevelSlidingWindowStrategy.parseWindowedLogData([[{}]])
-        actualTrainingData3 = eventLevelSlidingWindowStrategy.parseWindowedLogData([[{}, {}]])
+        try:
+            self.eventLevelSlidingWindowStrategy.parseWindowedLogData([[[{}]]])
+            self.fail('Trying to parse an invalid log should have thrown an exception!')
+        except StrategyError, error:
+            self.assertEqual(error.message, 'Error parsing windowed log data, found window with 1 sub-windows!')
 
-        self.assertEqual(actualTrainingData1, [])
-        self.assertEqual(actualTrainingData2, [])
-        self.assertEqual(actualTrainingData3, [])
+        try:
+            self.eventLevelSlidingWindowStrategy.parseWindowedLogData([[[{}, {}], [], []]])
+            self.fail('Trying to parse an invalid log should have thrown an exception!')
+        except StrategyError, error:
+            self.assertEqual(error.message, 'Error parsing windowed log data, could not find SEVERITY field!')
 
 
     def testFiveSubWindows(self):
@@ -56,7 +65,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
         """
 
         # Setup
-        mockWindowedLogData = load(open('eventLevelSlidingWindow/json/SampleWindowedEventLevelLog.json'))
+        mockWindowedLogData = load(open('eventLevelSlidingWindow/json/SampleFiveWindowedEventLevelLog.json'))
         expectedTrainingData = [
 
             # Contains tuples of counts for (INFO,WARN,ERROR,FATAL) events for the first five sub-windows,
@@ -65,10 +74,9 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
             ((1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), False),
             ((0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (1, 0, 0, 0), False)
         ]
-        eventLevelSlidingWindowStrategy = EventLevelSlidingWindow()
 
         # Test
-        actualTrainingData = eventLevelSlidingWindowStrategy.parseWindowedLogData(mockWindowedLogData)
+        actualTrainingData = self.eventLevelSlidingWindowStrategy.parseWindowedLogData(mockWindowedLogData)
 
         # Verify
         self.assertEqual(actualTrainingData, expectedTrainingData)
@@ -81,7 +89,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
         """
 
         # Setup
-        mockWindowedLogData = load(open('eventLevelSlidingWindow/json/SampleWindowedEventLevelLog.json'))
+        mockWindowedLogData = load(open('eventLevelSlidingWindow/json/SampleSixWindowedEventLevelLog.json'))
         expectedTrainingData = [
 
             # Contains tuples of counts for (INFO,WARN,ERROR,FATAL) events for the first five sub-windows,
@@ -90,10 +98,9 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
             ((0, 0, 0, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), False),
             ((1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (1, 0, 0, 0), False)
         ]
-        eventLevelSlidingWindowStrategy = EventLevelSlidingWindow()
 
         # Test
-        actualTrainingData = eventLevelSlidingWindowStrategy.parseWindowedLogData(mockWindowedLogData)
+        actualTrainingData = self.eventLevelSlidingWindowStrategy.parseWindowedLogData(mockWindowedLogData)
 
         # Verify
         self.assertEqual(actualTrainingData, expectedTrainingData)
