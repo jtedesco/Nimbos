@@ -110,11 +110,14 @@ class IntrepidRASParser(Parser):
                         for index in xrange(0, len(self.logKeys)):
                             if index < len(self.logKeys) - 1:
                                 # Add this to the summary of the log
-                                if self.logSummary[self.logKeys[index]] is not None:
+                                if self.logSummary[self.logKeys[index]] is not None and splitLine[index] != '-':
                                     self.logSummary[self.logKeys[index]].add(splitLine[index])
 
                                 # Add this to the log data
-                                logEntry[self.logKeys[index]] = splitLine[index]
+                                if splitLine[index] == '-':
+                                    logEntry[self.logKeys[index]] = None
+                                else:
+                                    logEntry[self.logKeys[index]] = splitLine[index]
 
                             else:
                                 # Join the entire message (the remaining tokens on the line) and add it
