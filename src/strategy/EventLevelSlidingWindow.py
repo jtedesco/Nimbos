@@ -1,3 +1,4 @@
+from pprint import pprint
 from src.strategy.SlidingWindow import SlidingWindow
 
 __author__ = 'jon'
@@ -14,17 +15,19 @@ class EventLevelSlidingWindow(SlidingWindow):
         - number of FATAL events
     """
 
+
     def parseWindowedLogData(self, windowedLogData):
+        pprint(windowedLogData)
+
         # TODO: Implement me!
         super(EventLevelSlidingWindow, self).parseWindowedLogData(windowedLogData)
+
 
     def train(self, examples):
         # TODO: Implement me!
         super(EventLevelSlidingWindow, self).train(examples)
 
+
     def predict(self, features):
         # TODO: Implement me!
         super(EventLevelSlidingWindow, self).predict(features)
-
-
-
