@@ -36,11 +36,21 @@ class SlidingWindow(PredictionStrategy):
             raise AssertionError('Training data for SlidingWindow must be non-empty!')
         else:
             # Parse the training data into windows
-            trainingData = self.parseLogWindows(data)
+            windowedLogData = self.parseLogWindows(data)
 
             # The training data, where each entry is a tuple of tuples
             #   organized by windows, then sub-windows, then data
-            return None
+            return self.parseWindowedLogData(windowedLogData)
+
+
+    def parseWindowedLogData(self, windowedLogData):
+        """
+          Helper function to parse the windowed log data (log data properly divided into sliding windows for learning)
+            into training examples.
+
+            @param  windowedLogData The log data divided into sliding window format
+        """
+        raise NotImplementedError("Cannot parse windowed log data in abstract class 'SlidingWindow'")
 
 
     def parseLogWindows(self, data):
