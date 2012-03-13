@@ -36,9 +36,11 @@ class EventLevelSlidingWindow(SlidingWindow):
 
         # Handle case of invalid windowed log data
         if windowedLogData is None or len(windowedLogData) <= 0:
+
             return []
 
         else:
+
             trainingData = []
 
             # Iterate through each window, each of which will consist of a training example
@@ -62,6 +64,7 @@ class EventLevelSlidingWindow(SlidingWindow):
                     }
 
                     for logEvent in subWindow:
+
                         # Fail to parse the log data if it's invalid (in that it doesn't contain the expected 'SEVERITY' field)
                         if self.severityKey not in logEvent:
                             raise  StrategyError(
