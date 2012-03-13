@@ -72,7 +72,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
             #  and a True/False label to whether or not it contains a FATAL error in the sixth sub-window
             ((2, 0, 1, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), True),
             ((1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), False),
-            ((0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (1, 0, 0, 0), False)
+            ((0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (0, 0, 0, 0), False)
         ]
 
         # Test
@@ -96,7 +96,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
             #  and a True/False label to whether or not it contains a FATAL error in the sixth sub-window
             ((2, 0, 1, 0), (0, 0, 0, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), True),
             ((0, 0, 0, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), False),
-            ((1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (1, 0, 0, 0), False)
+            ((1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (0, 0, 0, 0), False)
         ]
 
         # Test
