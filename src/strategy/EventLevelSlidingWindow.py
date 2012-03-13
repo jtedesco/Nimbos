@@ -1,4 +1,6 @@
 from datetime import timedelta
+import os
+import subprocess
 from src.strategy.SlidingWindow import SlidingWindow
 from src.strategy.StrategyError import StrategyError
 
@@ -16,11 +18,16 @@ class EventLevelSlidingWindow(SlidingWindow):
         - number of FATAL events
     """
 
-    def __init__(self, windowDelta=timedelta(hours=5), numberOfSubWindows=5, severities=None, severityKeyword=None):
+    def __init__(self, windowDelta=timedelta(hours=5), numberOfSubWindows=5, severities=None, severityKeyword=None,
+                 trainingFileName='trainingFile', modelFileName='modelFile', svmLightPath='/opt/svm-light/'):
         super(EventLevelSlidingWindow, self).__init__(windowDelta, numberOfSubWindows)
 
         self.severities = severities or ['INFO', 'WARN', 'ERROR', 'FATAL']
         self.severityKey = severityKeyword or 'SEVERITY'
+
+        self.trainingFileName = trainingFileName
+        self.modelFileName = modelFileName
+        self.svmLightPath = svmLightPath
 
 
     def parseWindowedLogData(self, windowedLogData):
@@ -94,9 +101,23 @@ class EventLevelSlidingWindow(SlidingWindow):
                                 last window had a fatal event
         """
 
+        # Build the training file
         trainingFileContent = self.buildTrainingFileContent(examples)
+        trainingFile = open(self.trainingFileName, 'w')
+        trainingFile.write(trainingFileContent)
+        trainingFile.close()
 
-        super(EventLevelSlidingWindow, self).train(examples)
+        # Train a model based on the training file
+        subprocess.call(self.svmLightPath + 'svm_learn ' + self.trainingFileName + ' ' + self.modelFileName, shell=True)
+
+        # Read the learned model and store the string
+        modelFile = open(self.modelFileName)
+        self.model = modelFile.read()
+        modelFile.close()
+
+        # Cleanup
+        os.remove(self.trainingFileName)
+        os.remove(self.modelFileName)
 
 
     def predict(self, features):
@@ -118,14 +139,13 @@ class EventLevelSlidingWindow(SlidingWindow):
             raise StrategyError('Error building training file content: no examples given!')
 
         # Get the expected number of features per example, to make sure each example has the same number
-        numberOfFeatures = (len(examples[0])-1) * len(examples[0][0])
+        numberOfFeatures = (len(examples[0]) - 1) * len(examples[0][0])
 
         trainingFileLines = []
         for window in examples:
-
             # Take the counts from all sub-windows as features
             features = []
-            for subWindowIndex in xrange(0, len(window)-1):
+            for subWindowIndex in xrange(0, len(window) - 1):
                 subWindow = window[subWindowIndex]
                 for entry in subWindow:
                     features += [entry]
@@ -135,7 +155,7 @@ class EventLevelSlidingWindow(SlidingWindow):
                 raise StrategyError('Error building training file content: Invalid training data!')
 
             # Determine whether this is a positive or negative example
-            hasFatalEvent = window[len(window)-1]
+            hasFatalEvent = window[len(window) - 1]
             if hasFatalEvent:
                 trainingFileLine = '+1 '
             else:
@@ -144,7 +164,7 @@ class EventLevelSlidingWindow(SlidingWindow):
             # Build the text for this line of the training file
             featuresText = []
             for featureIndex in xrange(0, len(features)):
-                featuresText.append('%d:%1.2f' % (featureIndex+1, float(features[featureIndex])))
+                featuresText.append('%d:%1.2f' % (featureIndex + 1, float(features[featureIndex])))
 
             trainingFileLine += ' '.join(featuresText)
             trainingFileLines.append(trainingFileLine)
@@ -153,6 +173,21 @@ class EventLevelSlidingWindow(SlidingWindow):
         trainingFileContent = '\n'.join(trainingFileLines)
 
         return trainingFileContent
+
+
+    def loadModel(self, modelFilePath):
+        """
+          Load a learned classification or regression model file, given its location on disk.
+        """
+
+        self.modelFileName = modelFilePath
+
+        modelFile = open(self.modelFileName)
+        self.model = modelFile.read()
+        modelFile.close()
+
+
+
 
 
 

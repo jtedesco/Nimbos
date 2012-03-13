@@ -11,7 +11,7 @@ class PredictionStrategy(object):
             @param  data    Some arbitrary training data
         """
 
-        raise NotImplementedError("Cannot call 'train' on an abstract strategy object!")
+        raise NotImplementedError("Cannot call 'parseTrainingData' on an abstract strategy object!")
 
 
     def train(self, examples):
@@ -30,3 +30,11 @@ class PredictionStrategy(object):
         """
 
         raise NotImplementedError("Cannot call 'predict' on an abstract strategy object!")
+
+
+    def loadModel(self, modelFilePath):
+        """
+          Load a learned classification or regression model file, given its location on disk.
+        """
+
+        raise NotImplementedError("Cannot call 'loadModel' on an abstract strategy object!")
