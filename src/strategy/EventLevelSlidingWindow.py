@@ -32,6 +32,8 @@ class EventLevelSlidingWindow(SlidingWindow):
         self.trainingFileName = dataSetName + ' - ' + EventLevelSlidingWindow.STRATEGY_NAME + 'Training'
         self.modelFileName = dataSetName + ' - ' + EventLevelSlidingWindow.STRATEGY_NAME + 'Model'
 
+        self.dataSetName = dataSetName
+
 
     def parseWindowedLogData(self, windowedLogData):
         """
@@ -128,6 +130,9 @@ class EventLevelSlidingWindow(SlidingWindow):
         # Cleanup
         os.remove(self.trainingFileName)
         os.remove(self.modelFileName)
+
+        # Return the model
+        return self.model
 
 
     def predict(self, features):
