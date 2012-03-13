@@ -46,7 +46,7 @@ class FailurePredictor(object):
         """
 
         # Train the model & mark it as trained
-        self.model.train(self.examples)
+        self.model.learn(self.examples)
         self.trainedModel = True
 
 

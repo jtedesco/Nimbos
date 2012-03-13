@@ -30,7 +30,7 @@ class IntrepidRASParser(Parser):
     LOG_FILENAME = 'BlueGeneRAS.log'
 
 
-    def __init__(self):
+    def __init__(self, logFilePath):
         """
           Constructs the parser for the Blue Gene/P RAS log data, opening the log file and returns list of log entry
             dictionaries defined by the log format.

@@ -97,7 +97,7 @@ class EventLevelSlidingWindow(SlidingWindow):
             return trainingData
 
 
-    def train(self, examples):
+    def learn(self, examples):
         """
           Trains SVM light based on the given training examples. Assumes all training examples are in the proper format.
 

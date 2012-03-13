@@ -14,7 +14,7 @@ class PredictionStrategy(object):
         raise NotImplementedError("Cannot call 'parseTrainingData' on an abstract strategy object!")
 
 
-    def train(self, examples):
+    def learn(self, examples):
         """
           Train the strategy based on some training examples.
             @param  examples    Training examples, structured as a dictionary features -> label/value

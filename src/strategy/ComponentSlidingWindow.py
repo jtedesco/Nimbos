@@ -20,9 +20,9 @@ class ComponentSlidingWindow(SlidingWindow):
         # TODO: Implement me!
         super(ComponentSlidingWindow, self).parseWindowedLogData(windowedLogData)
 
-    def train(self, examples):
+    def learn(self, examples):
         # TODO: Implement me!
-        super(ComponentSlidingWindow, self).train(examples)
+        super(ComponentSlidingWindow, self).learn(examples)
 
     def predict(self, features):
         # TODO: Implement me!
