@@ -27,7 +27,7 @@ class SlidingWindowTest(unittest.TestCase):
             self.slidingWindowStrategy.parseTrainingData([])
             self.fail("Should have thrown an assertion error")
         except AssertionError, error:
-            self.assertEqual(error.message, 'Training data for SlidingWindow must be non-empty!')
+            self.assertEqual('Training data for SlidingWindow must be non-empty!', error.message)
 
 
     def testParseTrainingDataWithNoData(self):
@@ -35,7 +35,7 @@ class SlidingWindowTest(unittest.TestCase):
             self.slidingWindowStrategy.parseTrainingData(None)
             self.fail("Should have thrown an assertion error")
         except AssertionError, error:
-            self.assertEqual(error.message, 'Training data for SlidingWindow must be non-empty!')
+            self.assertEqual('Training data for SlidingWindow must be non-empty!', error.message)
 
 
     def testParseLogWindows(self):
