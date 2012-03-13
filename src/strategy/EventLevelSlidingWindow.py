@@ -31,16 +31,11 @@ class EventLevelSlidingWindow(SlidingWindow):
             @param  windowedLogData The log data divided into sliding window format
         """
 
-
-
-
         # Handle case of invalid windowed log data
         if windowedLogData is None or len(windowedLogData) <= 0:
-
             return []
 
         else:
-
             trainingData = []
 
             # Iterate through each window, each of which will consist of a training example
@@ -64,7 +59,6 @@ class EventLevelSlidingWindow(SlidingWindow):
                     }
 
                     for logEvent in subWindow:
-
                         # Fail to parse the log data if it's invalid (in that it doesn't contain the expected 'SEVERITY' field)
                         if self.severityKey not in logEvent:
                             raise  StrategyError(
@@ -92,10 +86,38 @@ class EventLevelSlidingWindow(SlidingWindow):
 
 
     def train(self, examples):
-        # TODO: Implement me!
+        """
+          Trains SVM light based on the given training examples. Assumes all training examples are in the proper format.
+
+            @param  examples    The training examples, given in the training data format, where each entry is a tuple of
+                                event severity counts for each sub-window, followed by T/F based on whether or not the
+                                last window had a fatal event
+        """
+
+        trainingFileContent = self.buildTrainingFileContent(examples)
+
         super(EventLevelSlidingWindow, self).train(examples)
 
 
     def predict(self, features):
         # TODO: Implement me!
         super(EventLevelSlidingWindow, self).predict(features)
+
+
+    def buildTrainingFileContent(self, examples):
+        """
+          Helper function to build the content to be dumped to the training file for SVM light. Assumes all training
+            examples are in the proper format.
+
+            @param  examples    The training examples created from <code>parseWindowedLogData</code>
+            @return A string representing the content to be output to the training file for SVM light
+        """
+
+        # Handle error case of no examples
+        if examples is None or len(examples) <= 0:
+            raise StrategyError('Error building training file: no examples given!')
+
+        pass
+
+
+

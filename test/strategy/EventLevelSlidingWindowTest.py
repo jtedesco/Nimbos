@@ -14,7 +14,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
         self.eventLevelSlidingWindowStrategy = EventLevelSlidingWindow()
 
 
-    def testEmpty(self):
+    def testParseTrainignDataEmpty(self):
         """
           Tests that no training data is returned when passed an empty log
         """
@@ -24,7 +24,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
         self.assertEqual([], actualTrainingData)
 
 
-    def testNone(self):
+    def testParseTrainignDataNone(self):
         """
           Tests that no training data is returned when passed a null log
         """
@@ -34,7 +34,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
         self.assertEqual([], actualTrainingData)
 
 
-    def testInvalid(self):
+    def testParseTrainignDataInvalid(self):
         """
           Tests that no training data is returned when passed an invalid log
         """
@@ -58,7 +58,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
             self.assertEqual('Error parsing windowed log data, could not find SEVERITY field!', error.message)
 
 
-    def testFiveSubWindows(self):
+    def testParseTrainignDataFiveSubWindows(self):
         """
           Tests that the training data for the event level sliding window strategy is generated correctly for 5
             sub-window length windows
@@ -82,7 +82,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
         self.assertEqual(expectedTrainingData, actualTrainingData)
 
 
-    def testSixSubWindows(self):
+    def testParseTrainignDataSixSubWindows(self):
         """
           Tests that the training data for the event level sliding window strategy is generated correctly for 6
             sub-window length windows
@@ -104,3 +104,29 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
 
         # Verify
         self.assertEqual(expectedTrainingData, actualTrainingData)
+
+
+    def testBuildTrainingFileContentNone(self):
+
+        try:
+            self.eventLevelSlidingWindowStrategy.buildTrainingFileContent(None)
+            self.fail('Should have thrown a StrategyError given None for training data!')
+        except StrategyError, error:
+            self.assertEqual('Error building training file: no examples given!', error.message)
+
+
+    def testBuildTrainingFileContentEmpty(self):
+
+        try:
+            self.eventLevelSlidingWindowStrategy.buildTrainingFileContent([])
+            self.fail('Should have thrown a StrategyError given None for training data!')
+        except StrategyError, error:
+            self.assertEqual('Error building training file: no examples given!', error.message)
+
+
+    def testBuildTrainingFileContentFiveWindow(self):
+        pass
+
+
+    def testBuildTrainingFileContentSixWindow(self):
+        pass
