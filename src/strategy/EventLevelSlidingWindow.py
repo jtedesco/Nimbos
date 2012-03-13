@@ -1,3 +1,4 @@
+from datetime import timedelta
 from src.strategy.SlidingWindow import SlidingWindow
 from src.strategy.StrategyError import StrategyError
 
@@ -15,6 +16,12 @@ class EventLevelSlidingWindow(SlidingWindow):
         - number of FATAL events
     """
 
+    def __init__(self, windowDelta=timedelta(hours=5), numberOfSubWindows=5, severities=None, severityKeyword=None):
+        super(EventLevelSlidingWindow, self).__init__(windowDelta, numberOfSubWindows)
+
+        self.severities = severities or ['INFO', 'WARN', 'ERROR', 'FATAL']
+        self.severityKey = severityKeyword or 'SEVERITY'
+
 
     def parseWindowedLogData(self, windowedLogData):
         """
@@ -23,6 +30,9 @@ class EventLevelSlidingWindow(SlidingWindow):
 
             @param  windowedLogData The log data divided into sliding window format
         """
+
+
+
 
         # Handle case of invalid windowed log data
         if windowedLogData is None or len(windowedLogData) <= 0:
@@ -45,28 +55,30 @@ class EventLevelSlidingWindow(SlidingWindow):
 
                     # Counts the number of events of each severity
                     eventCounts = {
-                        'INFO': 0,
-                        'WARN': 0,
-                        'ERROR': 0,
-                        'FATAL': 0
+                        self.severities[0]: 0,
+                        self.severities[1]: 0,
+                        self.severities[2]: 0,
+                        self.severities[3]: 0
                     }
 
                     for logEvent in subWindow:
                         # Fail to parse the log data if it's invalid (in that it doesn't contain the expected 'SEVERITY' field)
-                        if 'SEVERITY' not in logEvent:
-                            raise  StrategyError('Error parsing windowed log data, could not find SEVERITY field!')
+                        if self.severityKey not in logEvent:
+                            raise  StrategyError(
+                                'Error parsing windowed log data, could not find %s field!' % self.severityKey)
 
                         # Tally an event of this severity
-                        eventCounts[logEvent['SEVERITY']] += 1
+                        eventCounts[logEvent[self.severityKey]] += 1
 
                     # Append the counts for this sub-window
                     subWindowData.append(
-                        (eventCounts['INFO'], eventCounts['WARN'], eventCounts['ERROR'], eventCounts['FATAL']))
+                        (eventCounts[self.severities[0]], eventCounts[self.severities[1]],
+                         eventCounts[self.severities[2]], eventCounts[self.severities[3]]))
 
                 # Look for 'FATAL' events in the last window
                 foundFatalEvent = False
                 for logEvent in window[-1]:
-                    if logEvent['SEVERITY'] == 'FATAL':
+                    if logEvent[self.severityKey] == self.severities[3]:
                         foundFatalEvent = True
                         break
 
