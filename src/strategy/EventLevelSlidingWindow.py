@@ -117,7 +117,38 @@ class EventLevelSlidingWindow(SlidingWindow):
         if examples is None or len(examples) <= 0:
             raise StrategyError('Error building training file: no examples given!')
 
-        pass
+        # Get the expected number of features, to make sure each example has the same number
+        numberOfFeatures = len(examples[0]) * (len(examples[0][0])-1) + 1
+
+        trainingFileLines = []
+        for window in examples:
+
+            # Take the counts from all sub-windows as features
+            features = []
+            for subWindowIndex in xrange(0, len(window)-1):
+                subWindow = window[subWindowIndex]
+                for entry in subWindow:
+                    features += [entry]
+
+            # Determine whether this is a positive or negative example
+            hasFatalEvent = window[len(window)-1]
+            if hasFatalEvent:
+                trainingFileLine = '+1 '
+            else:
+                trainingFileLine = '-1 '
+
+            # Build the text for this line of the training file
+            featuresText = []
+            for featureIndex in xrange(0, len(features)):
+                featuresText.append('%d:%1.2f' % (featureIndex+1, float(features[featureIndex])))
+
+            trainingFileLine += ' '.join(featuresText)
+            trainingFileLines.append(trainingFileLine)
+
+        # Join the lines of the training file
+        trainingFileContent = '\n'.join(trainingFileLines)
+
+        return trainingFileContent
 
 
 
