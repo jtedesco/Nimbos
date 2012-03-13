@@ -34,12 +34,14 @@ class IntrepidRASParser(Parser):
         """
           Constructs the parser for the Blue Gene/P RAS log data, opening the log file and returns list of log entry
             dictionaries defined by the log format.
+
+            @param  logFilePath The absolute path to the log file to parse
         """
 
         super(IntrepidRASParser, self).__init__()
 
         # The path & handle on the log file
-        self.logPath = self.logDirectoryPath + '/' + IntrepidRASParser.LOG_FILENAME
+        self.logPath = logFilePath
         self.logFile = open(self.logPath)
 
         # The log data and summarized description, lazily created
@@ -175,7 +177,8 @@ class IntrepidRASParser(Parser):
 
 
 if __name__ == '__main__':
-    parser = IntrepidRASParser()
+    projectRoot = os.environ['PROJECT_ROOT']
+    parser = IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')
     summary = parser.summarize()
     log = parser.parse()
     for key in summary:
