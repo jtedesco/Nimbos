@@ -115,10 +115,10 @@ class EventLevelSlidingWindow(SlidingWindow):
 
         # Handle error case of no examples
         if examples is None or len(examples) <= 0:
-            raise StrategyError('Error building training file: no examples given!')
+            raise StrategyError('Error building training file content: no examples given!')
 
-        # Get the expected number of features, to make sure each example has the same number
-        numberOfFeatures = len(examples[0]) * (len(examples[0][0])-1) + 1
+        # Get the expected number of features per example, to make sure each example has the same number
+        numberOfFeatures = (len(examples[0])-1) * len(examples[0][0])
 
         trainingFileLines = []
         for window in examples:
@@ -129,6 +129,10 @@ class EventLevelSlidingWindow(SlidingWindow):
                 subWindow = window[subWindowIndex]
                 for entry in subWindow:
                     features += [entry]
+
+            # Handle the error case where
+            if len(features) != numberOfFeatures:
+                raise StrategyError('Error building training file content: Invalid training data!')
 
             # Determine whether this is a positive or negative example
             hasFatalEvent = window[len(window)-1]

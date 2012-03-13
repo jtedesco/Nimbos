@@ -112,16 +112,42 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
             self.eventLevelSlidingWindowStrategy.buildTrainingFileContent(None)
             self.fail('Should have thrown a StrategyError given None for training data!')
         except StrategyError, error:
-            self.assertEqual('Error building training file: no examples given!', error.message)
+            self.assertEqual('Error building training file content: no examples given!', error.message)
 
 
     def testBuildTrainingFileContentEmpty(self):
 
         try:
             self.eventLevelSlidingWindowStrategy.buildTrainingFileContent([])
-            self.fail('Should have thrown a StrategyError given None for training data!')
+            self.fail('Should have thrown a StrategyError given empty training data!')
         except StrategyError, error:
-            self.assertEqual('Error building training file: no examples given!', error.message)
+            self.assertEqual('Error building training file content: no examples given!', error.message)
+
+
+    def testBuildTrainingFileContentInvalid(self):
+
+        invalidTrainingData1 = [
+            ((2, 0, 1, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), True),
+            ((1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), False),
+            ((0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (0, 0, 0, 0), False)
+        ]
+        invalidTrainingData2 = [
+            ((2, 0, 1, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), True),
+            ((1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0), False),
+            ((0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (0, 0, 0, 0), False)
+        ]
+
+        try:
+            self.eventLevelSlidingWindowStrategy.buildTrainingFileContent(invalidTrainingData1)
+            self.fail('Should have thrown a StrategyError given invalid training data!')
+        except StrategyError, error:
+            self.assertEqual('Error building training file content: Invalid training data!', error.message)
+
+        try:
+            self.eventLevelSlidingWindowStrategy.buildTrainingFileContent(invalidTrainingData2)
+            self.fail('Should have thrown a StrategyError given invalid training data!')
+        except StrategyError, error:
+            self.assertEqual('Error building training file content: Invalid training data!', error.message)
 
 
     def testBuildTrainingFileContentFiveWindow(self):
