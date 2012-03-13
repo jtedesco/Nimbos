@@ -37,4 +37,8 @@ class PredictionStrategy(object):
           Load a learned classification or regression model file, given its location on disk.
         """
 
-        raise NotImplementedError("Cannot call 'loadModel' on an abstract strategy object!")
+        self.modelFileName = modelFilePath
+
+        modelFile = open(self.modelFileName)
+        self.model = modelFile.read()
+        modelFile.close()

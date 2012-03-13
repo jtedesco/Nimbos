@@ -173,21 +173,3 @@ class EventLevelSlidingWindow(SlidingWindow):
         trainingFileContent = '\n'.join(trainingFileLines)
 
         return trainingFileContent
-
-
-    def loadModel(self, modelFilePath):
-        """
-          Load a learned classification or regression model file, given its location on disk.
-        """
-
-        self.modelFileName = modelFilePath
-
-        modelFile = open(self.modelFileName)
-        self.model = modelFile.read()
-        modelFile.close()
-
-
-
-
-
-
