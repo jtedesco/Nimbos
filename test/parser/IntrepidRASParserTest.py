@@ -1,4 +1,5 @@
 from json import load
+import os
 from src.parser.IntrepidRASParser import IntrepidRASParser
 
 __author__ = 'jon'
@@ -35,6 +36,7 @@ class IntrepidRASParserTest(unittest.TestCase):
           Setup before each test, creating a new parser
         """
 
+        self.projectRoot = os.environ['PROJECT_ROOT']
         self.parser = IntrepidRASParser()
 
 
@@ -65,7 +67,7 @@ class IntrepidRASParserTest(unittest.TestCase):
           Test that parsing an empty log results in empty summarized and log data
         """
 
-        self.parser.logFile = open('intrepid/log/SampleEmptyLog')
+        self.parser.logPath = self.projectRoot + '/test/parser/intrepid/log/SampleEmptyLog'
 
         parsedData = self.parser.parse()
         summarizedData = self.parser.summarize()
@@ -79,7 +81,7 @@ class IntrepidRASParserTest(unittest.TestCase):
           Test that parsing an invalid log results in empty summarized and log data
         """
 
-        self.parser.logFile = open('intrepid/log/SampleInvalidLog')
+        self.parser.logPath = self.projectRoot + '/test/parser/intrepid/log/SampleInvalidLog'
 
         parsedData = self.parser.parse()
         summarizedData = self.parser.summarize()
@@ -94,9 +96,9 @@ class IntrepidRASParserTest(unittest.TestCase):
         """
 
         # Setup
-        expectedSummarizedLog = load(open('intrepid/json/ExpectedSummarizedLog.json'))
-        expectedParsedLog = load(open('intrepid/json/ExpectedParsedLog.json'))
-        self.parser.logFile = open('intrepid/log/SampleLog')
+        expectedSummarizedLog = load(open(self.projectRoot + '/test/parser/intrepid/json/ExpectedSummarizedLog.json'))
+        expectedParsedLog = load(open(self.projectRoot + '/test/parser/intrepid/json/ExpectedParsedLog.json'))
+        self.parser.logPath = self.projectRoot + '/test/parser/intrepid/log/SampleLog'
         self.maxDiff = 2000
 
         # Test
