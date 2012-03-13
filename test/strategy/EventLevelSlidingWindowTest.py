@@ -21,7 +21,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
 
         actualTrainingData = self.eventLevelSlidingWindowStrategy.parseWindowedLogData([])
 
-        self.assertEqual(actualTrainingData, [])
+        self.assertEqual([], actualTrainingData)
 
 
     def testNone(self):
@@ -31,7 +31,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
 
         actualTrainingData = self.eventLevelSlidingWindowStrategy.parseWindowedLogData(None)
 
-        self.assertEqual(actualTrainingData, [])
+        self.assertEqual([], actualTrainingData)
 
 
     def testInvalid(self):
@@ -43,19 +43,19 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
             self.eventLevelSlidingWindowStrategy.parseWindowedLogData([[]])
             self.fail('Trying to parse an invalid log should have thrown an exception!')
         except StrategyError, error:
-            self.assertEqual(error.message, 'Error parsing windowed log data, found window with 0 sub-windows!')
+            self.assertEqual('Error parsing windowed log data, found window with 0 sub-windows!', error.message)
 
         try:
             self.eventLevelSlidingWindowStrategy.parseWindowedLogData([[[{}]]])
             self.fail('Trying to parse an invalid log should have thrown an exception!')
         except StrategyError, error:
-            self.assertEqual(error.message, 'Error parsing windowed log data, found window with 1 sub-windows!')
+            self.assertEqual('Error parsing windowed log data, found window with 1 sub-windows!', error.message)
 
         try:
             self.eventLevelSlidingWindowStrategy.parseWindowedLogData([[[{}, {}], [], []]])
             self.fail('Trying to parse an invalid log should have thrown an exception!')
         except StrategyError, error:
-            self.assertEqual(error.message, 'Error parsing windowed log data, could not find SEVERITY field!')
+            self.assertEqual('Error parsing windowed log data, could not find SEVERITY field!', error.message)
 
 
     def testFiveSubWindows(self):
@@ -79,7 +79,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
         actualTrainingData = self.eventLevelSlidingWindowStrategy.parseWindowedLogData(mockWindowedLogData)
 
         # Verify
-        self.assertEqual(actualTrainingData, expectedTrainingData)
+        self.assertEqual(expectedTrainingData, actualTrainingData)
 
 
     def testSixSubWindows(self):
@@ -103,4 +103,4 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
         actualTrainingData = self.eventLevelSlidingWindowStrategy.parseWindowedLogData(mockWindowedLogData)
 
         # Verify
-        self.assertEqual(actualTrainingData, expectedTrainingData)
+        self.assertEqual(expectedTrainingData, actualTrainingData)
