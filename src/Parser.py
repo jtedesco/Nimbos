@@ -1,5 +1,3 @@
-import os
-
 __author__ = 'jon'
 
 class Parser(object):
@@ -8,11 +6,11 @@ class Parser(object):
     """
 
 
-    def __init__(self):
+    def __init__(self, logFilePath):
 
-        # Find the project root & log direcotry path
-        projectRoot = os.environ['PROJECT_ROOT']
-        self.logDirectoryPath = projectRoot + '/log'
+        # The path & handle on the log file
+        self.logPath = logFilePath
+        self.logFile = open(self.logPath)
 
 
     def parse(self):

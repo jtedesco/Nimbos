@@ -1,3 +1,4 @@
+import os
 from src.Parser import Parser
 
 __author__ = 'jon'
@@ -38,11 +39,7 @@ class IntrepidRASParser(Parser):
             @param  logFilePath The absolute path to the log file to parse
         """
 
-        super(IntrepidRASParser, self).__init__()
-
-        # The path & handle on the log file
-        self.logPath = logFilePath
-        self.logFile = open(self.logPath)
+        super(IntrepidRASParser, self).__init__(logFilePath)
 
         # The log data and summarized description, lazily created
         self.log = None
