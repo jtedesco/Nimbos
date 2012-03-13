@@ -9,10 +9,9 @@ class Parser(object):
 
 
     def __init__(self):
-        # Find the project root
-        projectRoot = str(os.getcwd())
-        projectRoot = projectRoot[:projectRoot.find('Nimbos') + len('Nimbos')]
 
+        # Find the project root & log direcotry path
+        projectRoot = os.environ['PROJECT_ROOT']
         self.logDirectoryPath = projectRoot + '/log'
 
 

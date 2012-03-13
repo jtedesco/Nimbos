@@ -16,18 +16,21 @@ class EventLevelSlidingWindow(SlidingWindow):
         - number of WARN events
         - number of ERROR events
         - number of FATAL events
+
+      Note: This expects svm_learn and svm_classify to be on your path
     """
 
-    def __init__(self, windowDelta=timedelta(hours=5), numberOfSubWindows=5, severities=None, severityKeyword=None,
-                 trainingFileName='trainingFile', modelFileName='modelFile', svmLightPath='/opt/svm-light/'):
+    STRATEGY_NAME = 'EventLevelSlidingWindow'
+
+    def __init__(self, dataSetName, windowDelta=timedelta(hours=5), numberOfSubWindows=5, severities=None, severityKeyword=None):
+
         super(EventLevelSlidingWindow, self).__init__(windowDelta, numberOfSubWindows)
 
         self.severities = severities or ['INFO', 'WARN', 'ERROR', 'FATAL']
         self.severityKey = severityKeyword or 'SEVERITY'
 
-        self.trainingFileName = trainingFileName
-        self.modelFileName = modelFileName
-        self.svmLightPath = svmLightPath
+        self.trainingFileName = dataSetName + ' - ' + EventLevelSlidingWindow.STRATEGY_NAME + 'Training'
+        self.modelFileName = dataSetName + ' - ' + EventLevelSlidingWindow.STRATEGY_NAME + 'Model'
 
 
     def parseWindowedLogData(self, windowedLogData):
@@ -101,6 +104,13 @@ class EventLevelSlidingWindow(SlidingWindow):
                                 last window had a fatal event
         """
 
+        # Throw an exception if the 'scratch' training and/or model files already exist
+        if os.path.exists(self.trainingFileName):
+            raise IOError('Error training EventLevelSlidingWindow strategy: %s already exists!' % self.trainingFileName)
+        if os.path.exists(self.modelFileName):
+            raise IOError('Error training EventLevelSlidingWindow strategy: %s already exists!' % self.modelFileName)
+
+
         # Build the training file
         trainingFileContent = self.buildTrainingFileContent(examples)
         trainingFile = open(self.trainingFileName, 'w')
@@ -108,7 +118,7 @@ class EventLevelSlidingWindow(SlidingWindow):
         trainingFile.close()
 
         # Train a model based on the training file
-        subprocess.call(self.svmLightPath + 'svm_learn ' + self.trainingFileName + ' ' + self.modelFileName, shell=True)
+        subprocess.call('svm_learn ' + self.trainingFileName + ' ' + self.modelFileName, shell=True)
 
         # Read the learned model and store the string
         modelFile = open(self.modelFileName)
