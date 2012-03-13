@@ -31,7 +31,7 @@ class IntrepidRASParser(Parser):
     LOG_FILENAME = 'BlueGeneRAS.log'
 
 
-    def __init__(self, logFilePath):
+    def __init__(self, logFilePath=None):
         """
           Constructs the parser for the Blue Gene/P RAS log data, opening the log file and returns list of log entry
             dictionaries defined by the log format.
@@ -93,10 +93,13 @@ class IntrepidRASParser(Parser):
         # Simply a list of log entries
         self.log = []
 
+        # Open the log file
+        logFile = open(self.logPath)
+
         # Read through the log file and populate the log data
         lineNumber = 0
         linesSkipped = 0
-        for line in self.logFile:
+        for line in logFile:
             # Skip empty & header lines
             line = line.strip()
             if len(line) > 0:
@@ -136,6 +139,7 @@ class IntrepidRASParser(Parser):
             if self.logSummary[key] is not None:
                 self.logSummary[key] = list(self.logSummary[key])
 
+        logFile.close()
 
     def parse(self):
         """

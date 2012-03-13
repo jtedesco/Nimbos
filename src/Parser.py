@@ -10,7 +10,6 @@ class Parser(object):
 
         # The path & handle on the log file
         self.logPath = logFilePath
-        self.logFile = open(self.logPath)
 
 
     def parse(self):
