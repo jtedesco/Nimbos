@@ -46,7 +46,7 @@ def evaluateBinaryPredictions(correctLabels, predictions):
             'failurePercentage': failurePercentage
         },
         'counts': {
-            'mispredictedFailures': misPredictedFailures,
+            'misPredictedFailures': misPredictedFailures,
             'predictedFailures': predictedFailures,
             'misPredictedNonFailures': misPredictedNonFailures,
             'predictedNonFailures': predictedNonFailures,
