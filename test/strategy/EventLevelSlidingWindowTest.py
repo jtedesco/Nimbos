@@ -1,4 +1,5 @@
 from json import load
+import os
 import unittest
 from src.strategy.EventLevelSlidingWindow import EventLevelSlidingWindow
 from src.strategy.StrategyError import StrategyError
@@ -11,7 +12,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
     """
 
     def setUp(self):
-        self.eventLevelSlidingWindowStrategy = EventLevelSlidingWindow()
+        self.eventLevelSlidingWindowStrategy = EventLevelSlidingWindow('TestData')
 
         # Parsed training data for five sub-window example
         self.fiveSubWindowTrainingData = [
@@ -26,6 +27,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
             ((0, 0, 0, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), False),
             ((1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (0, 0, 0, 0), False)
         ]
+        self.projectRoot = os.environ['PROJECT_ROOT']
 
 
     def testParseTrainignDataEmpty(self):
@@ -79,7 +81,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
         """
 
         # Setup
-        mockWindowedLogData = load(open('eventLevelSlidingWindow/parsedLog/FiveSubWindows.json'))
+        mockWindowedLogData = load(open(self.projectRoot + '/test/strategy/eventLevelSlidingWindow/parsedLog/FiveSubWindows.json'))
         expectedTrainingData = self.fiveSubWindowTrainingData
 
         # Test
@@ -96,7 +98,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
         """
 
         # Setup
-        mockWindowedLogData = load(open('eventLevelSlidingWindow/parsedLog/SixSubWindows.json'))
+        mockWindowedLogData = load(open(self.projectRoot + '/test/strategy/eventLevelSlidingWindow/parsedLog/SixSubWindows.json'))
         expectedTrainingData = self.sixSubWindowTrainingData
 
         # Test
@@ -154,7 +156,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
 
         # Setup
         trainingData = self.fiveSubWindowTrainingData
-        expectedTrainingFileContent = open('eventLevelSlidingWindow/trainingFile/FiveSubWindows').read()
+        expectedTrainingFileContent = open(self.projectRoot + '/test/strategy/eventLevelSlidingWindow/trainingFile/FiveSubWindows').read()
 
         # Test
         actualTrainingFileContent = self.eventLevelSlidingWindowStrategy.buildTrainingFileContent(trainingData)
@@ -168,7 +170,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
 
         # Setup
         trainingData = self.sixSubWindowTrainingData
-        expectedTrainingFileContent = open('eventLevelSlidingWindow/trainingFile/SixSubWindows').read()
+        expectedTrainingFileContent = open(self.projectRoot + '/test/strategy/eventLevelSlidingWindow/trainingFile/SixSubWindows').read()
 
         # Test
         actualTrainingFileContent = self.eventLevelSlidingWindowStrategy.buildTrainingFileContent(trainingData)
