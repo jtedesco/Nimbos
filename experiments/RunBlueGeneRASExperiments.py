@@ -72,9 +72,16 @@ if __name__ == '__main__':
 
         # If the model hasn't been learned, learn it, otherwise just load it
         if not os.path.exists(modelFilePath):
+
             parsedLogData = parser.parse()
             testData = strategy.parseData(parsedLogData)
             model = strategy.learn(testData)
+
+            # Save model file
+            modelFile = open(modelFilePath, 'w')
+            modelFile.write(model)
+            modelFile.close()
+
         else:
             strategy.loadModel(modelFilePath)
 
@@ -106,13 +113,22 @@ if __name__ == '__main__':
         # Gather basic percentages & counts of performance of model
         evaluations = evaluateBinaryPredictions(correctLabels, predictions)
 
-        # Print stats about the prediction accuracy
-        print "Percentages:"
-        print "------------"
+        # Gather stats about the prediction accuracy
+        resultsOutput = "Percentages:\n"
+        resultsOutput += "------------\n"
         for percentageMetric in evaluations['percentages']:
-            print "\t%s:  %2.2f %%" % (percentageMetric, evaluations['percentages'][percentageMetric] * 100)
-        print
-        print "Raw Counts:"
-        print "-----------"
+            resultsOutput += "\t%s:  %2.2f%%\n" % (percentageMetric, evaluations['percentages'][percentageMetric] * 100)
+        resultsOutput += "\n"
+        resultsOutput += "Raw Counts:\n"
+        resultsOutput += "-----------\n"
         for countMetric in evaluations['counts']:
-            print "\t%s:  %d" % (countMetric, evaluations['counts'][countMetric])
+            resultsOutput += "\t%s:  %d\n" % (countMetric, evaluations['counts'][countMetric])
+
+        # Dump the results for this experiment
+        resultsFilePath = projectRoot + '/experiments/BlueGeneRASResults/' + strategy.dataSetName + 'Results'
+        resultsFile = open(resultsFilePath, 'w')
+        resultsFile.write(resultsOutput)
+        resultsFile.close()
+
+        print "Analyzed results for '%s'" % strategy.dataSetName
+
