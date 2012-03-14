@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os
 from experiments.EvaluationUtility import evaluateBinaryPredictions
 from src.parser.IntrepidRASParser import IntrepidRASParser
@@ -10,13 +11,60 @@ if __name__ == '__main__':
 
     # The experiments to run (strategy, parser, model file name)
     experiments = [
-        (EventLevelStrategy('BlueGeneRASPosNeg'),
+        (EventLevelStrategy('BlueGeneRASPosNeg5SubWindows5Hours'),
           IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
           IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
-        (EventLevelStrategy('BlueGeneRASPosNeut', negativeLabels=False),
+        (EventLevelStrategy('BlueGeneRASPosNeut5SubWindows5Hours', negativeLabels=False),
           IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
-          IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'))
-    ]
+          IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeg3SubWindows5Hours', numberOfSubWindows=3),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeut3SubWindows5Hours', negativeLabels=False, numberOfSubWindows=3),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeg7SubWindows5Hours', numberOfSubWindows=7),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeut7SubWindows5Hours', negativeLabels=False, numberOfSubWindows=7),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeg5SubWindows3Hours', windowDelta=timedelta(hours=3)),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeut5SubWindows3Hours', negativeLabels=False, windowDelta=timedelta(hours=3)),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeg3SubWindows3Hours', numberOfSubWindows=3, windowDelta=timedelta(hours=3)),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeut3SubWindows3Hours', negativeLabels=False, numberOfSubWindows=3, windowDelta=timedelta(hours=3)),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeg7SubWindows3Hours', numberOfSubWindows=7, windowDelta=timedelta(hours=3)),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeut7SubWindows3Hours', negativeLabels=False, numberOfSubWindows=7, windowDelta=timedelta(hours=3)),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeg5SubWindows7Hours', windowDelta=timedelta(hours=7)),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeut5SubWindows7Hours', negativeLabels=False, windowDelta=timedelta(hours=7)),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeg3SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=3),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeut3SubWindows7Hours', negativeLabels=False, windowDelta=timedelta(hours=7), numberOfSubWindows=3),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeg7SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=7),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeut7SubWindows7Hours', negativeLabels=False, windowDelta=timedelta(hours=7), numberOfSubWindows=7),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'))    ]
 
     # Run each experiment, only learning the model if it doesn't already exist
     for strategy, parser, testFileParser in experiments:
