@@ -1,7 +1,7 @@
 import os
 from experiments.EvaluationUtility import evaluateBinaryPredictions
 from src.parser.IntrepidRASParser import IntrepidRASParser
-from src.strategy.EventLevelSlidingWindow import EventLevelSlidingWindow
+from src.strategy.slidingWindow.EventLevelStrategy import EventLevelStrategy
 
 __author__ = 'jon'
 
@@ -10,8 +10,7 @@ if __name__ == '__main__':
 
     # The experiments to run (strategy, parser, model file name)
     experiments = [
-        (EventLevelSlidingWindow('BlueGeneRAS'), IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'))
+        (EventLevelStrategy, IntrepidRASParser, IntrepidRASParser),
     ]
 
     # Run each experiment, only learning the model if it doesn't already exist
@@ -58,7 +57,7 @@ if __name__ == '__main__':
         print "Percentages:"
         print "------------"
         for percentageMetric in evaluations['percentages']:
-            print "\t%s:  %2.2f %%" % (percentageMetric, evaluations['percentages'][percentageMetric]*100)
+            print "\t%s:  %2.2f %%" % (percentageMetric, evaluations['percentages'][percentageMetric] * 100)
         print
         print "Raw Counts:"
         print "-----------"
