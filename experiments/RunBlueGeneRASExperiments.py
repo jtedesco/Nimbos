@@ -58,7 +58,7 @@ if __name__ == '__main__':
         print "Percentages:"
         print "------------"
         for percentageMetric in evaluations['percentages']:
-            print "\t%s:  %2.2f" % (percentageMetric, evaluations['percentages'][percentageMetric])
+            print "\t%s:  %2.2f %%" % (percentageMetric, evaluations['percentages'][percentageMetric]*100)
         print
         print "Raw Counts:"
         print "-----------"
