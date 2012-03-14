@@ -31,6 +31,8 @@ class EventLevelSlidingWindow(SlidingWindow):
 
         self.trainingFileName = dataSetName + ' - ' + EventLevelSlidingWindow.STRATEGY_NAME + 'Training'
         self.modelFileName = dataSetName + ' - ' + EventLevelSlidingWindow.STRATEGY_NAME + 'Model'
+        self.predictionsInputFileName = dataSetName + ' - ' + EventLevelSlidingWindow.STRATEGY_NAME + 'PredictionsIn'
+        self.predictionsOutputFileName = dataSetName + ' - ' + EventLevelSlidingWindow.STRATEGY_NAME + 'PredictionsOut'
 
         self.dataSetName = dataSetName
 
@@ -106,21 +108,25 @@ class EventLevelSlidingWindow(SlidingWindow):
                                 last window had a fatal event
         """
 
-        # Throw an exception if the 'scratch' training and/or model files already exist
+        # Throw an exception if the 'scratch' training file already exists
         if os.path.exists(self.trainingFileName):
             raise IOError('Error training EventLevelSlidingWindow strategy: %s already exists!' % self.trainingFileName)
+
+        # Remove the model file if it already exists
         if os.path.exists(self.modelFileName):
-            raise IOError('Error training EventLevelSlidingWindow strategy: %s already exists!' % self.modelFileName)
+
+            print "Removing SVM model file '%s'" % self.modelFileName
+            os.remove(self.modelFileName)
 
 
         # Build the training file
-        trainingFileContent = self.buildTrainingFileContent(examples)
+        trainingFileContent = self.buildDataFileContent(examples)
         trainingFile = open(self.trainingFileName, 'w')
         trainingFile.write(trainingFileContent)
         trainingFile.close()
 
         # Train a model based on the training file
-        subprocess.call('svm_learn ' + self.trainingFileName + ' ' + self.modelFileName, shell=True)
+        subprocess.call('svm_learn "' + self.trainingFileName + '" "' + self.modelFileName + '"', shell=True)
 
         # Read the learned model and store the string
         modelFile = open(self.modelFileName)
@@ -135,12 +141,47 @@ class EventLevelSlidingWindow(SlidingWindow):
         return self.model
 
 
-    def predict(self, features):
-        # TODO: Implement me!
-        super(EventLevelSlidingWindow, self).predict(features)
+    def predict(self, data):
+        """
+          Uses SVM light to predict the classification for the given features
+
+            @param   data   The data entry to classify, given as a list of data entries in training example format
+            @return A list of True/False, each entry representing the prediction for whether or not the next window will
+                    have a FATAL error (corresponding to entries in the data)
+        """
+
+        # Throw an exception if the 'scratch' training and/or test files already exist
+        if os.path.exists(self.predictionsInputFileName):
+            raise IOError('Error predicting with EventLevelSlidingWindow strategy: %s already exists!' % self.predictionsInputFileName)
+        if os.path.exists(self.predictionsOutputFileName):
+            raise IOError('Error predicting EventLevelSlidingWindow strategy: %s already exists!' % self.predictionsOutputFileName)
+
+        # Write the model file if it doesn't already exist
+        if not os.path.exists(self.modelFileName):
+
+            modelFile = open(self.modelFileName, 'w')
+            modelFile.write(self.model)
+            modelFile.close()
 
 
-    def buildTrainingFileContent(self, examples):
+        # Create the predictions input file (test data)
+        predictionsInputFileContent = self.buildDataFileContent(data)
+        predictionsInputFile = open(self.predictionsInputFileName, 'w')
+        predictionsInputFile.write(predictionsInputFileContent)
+        predictionsInputFile.close()
+
+
+        # Use SVM light to predict classifications for all data entries
+        subprocess.call('svm_classify "' + self.predictionsInputFileName + '" "' + self.modelFileName + '" "' +
+                        self.predictionsOutputFileName + '"', shell=True)
+
+        # Cleanup
+        os.remove(self.predictionsInputFileName)
+
+        return None
+
+
+    def buildDataFileContent(self, examples):
         """
           Helper function to build the content to be dumped to the training file for SVM light. Assumes all training
             examples are in the proper format.

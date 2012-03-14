@@ -111,7 +111,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
     def testBuildTrainingFileContentNone(self):
 
         try:
-            self.eventLevelSlidingWindowStrategy.buildTrainingFileContent(None)
+            self.eventLevelSlidingWindowStrategy.buildDataFileContent(None)
             self.fail('Should have thrown a StrategyError given None for training data!')
         except StrategyError, error:
             self.assertEqual('Error building training file content: no examples given!', error.message)
@@ -120,7 +120,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
     def testBuildTrainingFileContentEmpty(self):
 
         try:
-            self.eventLevelSlidingWindowStrategy.buildTrainingFileContent([])
+            self.eventLevelSlidingWindowStrategy.buildDataFileContent([])
             self.fail('Should have thrown a StrategyError given empty training data!')
         except StrategyError, error:
             self.assertEqual('Error building training file content: no examples given!', error.message)
@@ -140,13 +140,13 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
         ]
 
         try:
-            self.eventLevelSlidingWindowStrategy.buildTrainingFileContent(invalidTrainingData1)
+            self.eventLevelSlidingWindowStrategy.buildDataFileContent(invalidTrainingData1)
             self.fail('Should have thrown a StrategyError given invalid training data!')
         except StrategyError, error:
             self.assertEqual('Error building training file content: Invalid training data!', error.message)
 
         try:
-            self.eventLevelSlidingWindowStrategy.buildTrainingFileContent(invalidTrainingData2)
+            self.eventLevelSlidingWindowStrategy.buildDataFileContent(invalidTrainingData2)
             self.fail('Should have thrown a StrategyError given invalid training data!')
         except StrategyError, error:
             self.assertEqual('Error building training file content: Invalid training data!', error.message)
@@ -159,7 +159,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
         expectedTrainingFileContent = open(self.projectRoot + '/test/strategy/eventLevelSlidingWindow/trainingFile/FiveSubWindows').read()
 
         # Test
-        actualTrainingFileContent = self.eventLevelSlidingWindowStrategy.buildTrainingFileContent(trainingData)
+        actualTrainingFileContent = self.eventLevelSlidingWindowStrategy.buildDataFileContent(trainingData)
 
         # Verify
         self.assertEqual(expectedTrainingFileContent, actualTrainingFileContent)
@@ -173,7 +173,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
         expectedTrainingFileContent = open(self.projectRoot + '/test/strategy/eventLevelSlidingWindow/trainingFile/SixSubWindows').read()
 
         # Test
-        actualTrainingFileContent = self.eventLevelSlidingWindowStrategy.buildTrainingFileContent(trainingData)
+        actualTrainingFileContent = self.eventLevelSlidingWindowStrategy.buildDataFileContent(trainingData)
 
         # Verify
         self.assertEqual(expectedTrainingFileContent, actualTrainingFileContent)

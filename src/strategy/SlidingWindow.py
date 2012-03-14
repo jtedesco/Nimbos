@@ -26,9 +26,9 @@ class SlidingWindow(PredictionStrategy):
         self.numberOfSubWindows = numberOfSubWindows
 
 
-    def parseTrainingData(self, data):
+    def parseData(self, data):
         """
-          Parse the training log data. All log entries are expected to contain an EVENT_TIME entry, which contains a
+          Parse the training/test log data. All log entries are expected to contain an EVENT_TIME entry, which contains a
            timestamp of the event formatted as "%Y-%m-%d-%H.%M.%S.%f", or Year-Month-Day-Hour.Minute.Second.Millisecond.
         """
 

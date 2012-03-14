@@ -5,7 +5,7 @@ class PredictionStrategy(object):
       Abstract class for failure prediction learning strategies.
     """
 
-    def parseTrainingData(self, data):
+    def parseData(self, data):
         """
           Parse training examples from training data
             @param  data    Some arbitrary training data
