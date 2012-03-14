@@ -10,7 +10,12 @@ if __name__ == '__main__':
 
     # The experiments to run (strategy, parser, model file name)
     experiments = [
-        (EventLevelStrategy, IntrepidRASParser, IntrepidRASParser),
+        (EventLevelStrategy('BlueGeneRASPosNeg'),
+          IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+          IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+        (EventLevelStrategy('BlueGeneRASPosNeut', negativeLabels=False),
+          IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+          IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'))
     ]
 
     # Run each experiment, only learning the model if it doesn't already exist

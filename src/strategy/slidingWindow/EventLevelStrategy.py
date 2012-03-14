@@ -22,8 +22,8 @@ class EventLevelStrategy(SlidingWindowStrategy):
 
     STRATEGY_NAME = 'EventLevelSlidingWindow'
 
-    def __init__(self, dataSetName, windowDelta=timedelta(hours=5), numberOfSubWindows=5, severities=None, severityKeyword=None):
-
+    def __init__(self, dataSetName, windowDelta=timedelta(hours=5), numberOfSubWindows=5, severities=None,
+                 severityKeyword=None, negativeLabels=True):
         super(EventLevelStrategy, self).__init__(windowDelta, numberOfSubWindows)
 
         self.severities = severities or ['INFO', 'WARN', 'ERROR', 'FATAL']
@@ -35,6 +35,8 @@ class EventLevelStrategy(SlidingWindowStrategy):
         self.predictionsOutputFileName = dataSetName + ' - ' + EventLevelStrategy.STRATEGY_NAME + 'PredictionsOut'
 
         self.dataSetName = dataSetName
+
+        self.negativeLabels = negativeLabels
 
 
     def parseWindowedLogData(self, windowedLogData):
@@ -114,7 +116,6 @@ class EventLevelStrategy(SlidingWindowStrategy):
 
         # Remove the model file if it already exists
         if os.path.exists(self.modelFileName):
-
             print "Removing SVM model file '%s'" % self.modelFileName
             os.remove(self.modelFileName)
 
@@ -152,13 +153,14 @@ class EventLevelStrategy(SlidingWindowStrategy):
 
         # Throw an exception if the 'scratch' training and/or test files already exist
         if os.path.exists(self.predictionsInputFileName):
-            raise IOError('Error predicting with EventLevelSlidingWindow strategy: %s already exists!' % self.predictionsInputFileName)
+            raise IOError(
+                'Error predicting with EventLevelSlidingWindow strategy: %s already exists!' % self.predictionsInputFileName)
         if os.path.exists(self.predictionsOutputFileName):
-            raise IOError('Error predicting EventLevelSlidingWindow strategy: %s already exists!' % self.predictionsOutputFileName)
+            raise IOError(
+                'Error predicting EventLevelSlidingWindow strategy: %s already exists!' % self.predictionsOutputFileName)
 
         # Write the model file if it doesn't already exist
         if not os.path.exists(self.modelFileName):
-
             modelFile = open(self.modelFileName, 'w')
             modelFile.write(self.model)
             modelFile.close()
@@ -215,7 +217,12 @@ class EventLevelStrategy(SlidingWindowStrategy):
             if hasFatalEvent:
                 trainingFileLine = '+1 '
             else:
-                trainingFileLine = '-1 '
+
+                # Determine whether to label non-failure examples as negative or neutral examples
+                if  self.negativeLabels:
+                    trainingFileLine = '-1 '
+                else:
+                    trainingFileLine = '0 '
 
             # Build the text for this line of the training file
             featuresText = []
