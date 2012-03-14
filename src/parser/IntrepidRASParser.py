@@ -180,12 +180,5 @@ class IntrepidRASParser(Parser):
 if __name__ == '__main__':
     projectRoot = os.environ['PROJECT_ROOT']
     parser = IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')
-    summary = parser.summarize()
     log = parser.parse()
-    for key in summary:
-        if summary[key] is not None:
-            print key + ": " + str(len(summary[key]))
-    print summary['COMPONENT']
-    print summary['SUBCOMPONENT']
-    print summary['MSG_ID']
-    print summary['ERRCODE']
+    print len(log)
