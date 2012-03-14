@@ -132,3 +132,7 @@ if __name__ == '__main__':
 
         print "Analyzed results for '%s'" % strategy.dataSetName
 
+        # Force Python to free the memory for these items, or the program will crash
+        del strategy
+        del parser
+        del testFileParser
