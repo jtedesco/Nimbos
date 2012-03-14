@@ -1,5 +1,4 @@
 import os
-import re
 from src.Parser import Parser
 
 __author__ = 'jon'
@@ -48,28 +47,23 @@ class IntrepidRASParser(Parser):
 
         # Describes the order if columns in which the keys appear in the log
         self.logKeys = [
-            ('RECID', "\w+", False),
-            ('MSG_ID', "\w+", True),
-            ('COMPONENT', "\w+", True),
-            ('SUBCOMPONENT', "\w+", True),
-            ('ERRCODE', "\w+", True),
-            ('SEVERITY', "\w+", True),
-            ('EVENT_TIME', "\w+", False),
-            ('FLAGS', "\w+", True),
-            ('PROCESSOR', "\w+", True),
-            ('NODE', "\w+", True),
-            ('BLOCK', "\w+", True),
-            ('LOCATION', "\w+", True),
-            ('SERIALNUMBER', "\w+", True),
-            ('ECID', "\w+", True),
-            ('MESSAGE', "[a-zA-Z0-9_ ]+", True)
+            'RECID',
+            'MSG_ID',
+            'COMPONENT',
+            'SUBCOMPONENT',
+            'ERRCODE',
+            'SEVERITY',
+            'EVENT_TIME',
+            'FLAGS',
+            'PROCESSOR',
+            'NODE',
+            'BLOCK',
+            'LOCATION',
+            'SERIALNUMBER',
+            'ECID',
+            'MESSAGE'
         ]
-        self.delim = "\s*"
-        self.skipFirstLines = 2
 
-        self.regex = ""
-        for name, elem_regex, tracked in self.logKeys:
-            self.regex += "(?P<" + name + ">" + elem_regex + ")" + self.delim
 
     def __parseLogData(self):
         """
@@ -78,37 +72,74 @@ class IntrepidRASParser(Parser):
 
         # Each entry is either 'None', in which case there is not really a set of possible values for the entry, or
         #   a set of all values found for that entry
-        self.logSummary = {}
-        for name, elem_regex, tracked in self.logKeys:
-            if tracked:
-                self.logSummary[name] = set([])
-            else:
-                self.logSummary[name] = None
+        self.logSummary = {
+            'RECID': None,
+            'MSG_ID': set([]),
+            'COMPONENT': set([]),
+            'SUBCOMPONENT': set([]),
+            'ERRCODE': set([]),
+            'SEVERITY': set([]),
+            'EVENT_TIME': None,
+            'FLAGS': set([]),
+            'PROCESSOR': set([]),
+            'NODE': set([]),
+            'BLOCK': set([]),
+            'LOCATION': set([]),
+            'SERIALNUMBER': set([]),
+            'ECID': set([]),
+            'MESSAGE': set([])
+        }
 
+        # Simply a list of log entries
         self.log = []
 
-        #iterate over lines in file
-        with open(self.logPath) as logFile:
+        # Open the log file
+        logFile = open(self.logPath)
 
-            #skip first lines
-            for i in range(self.skipFirstLines):
-                logFile.readline()
+        # Read through the log file and populate the log data
+        lineNumber = 0
+        linesSkipped = 0
+        for line in logFile:
+            # Skip empty & header lines
+            line = line.strip()
+            if len(line) > 0:
+                lineNumber += 1
+                if lineNumber >= 3:
+                    # Add each entry that we're counting
+                    splitLine = line.split()
 
-            #read log data
-            for line in logFile:
-                m = re.search(self.regex, line.strip())
+                    # Check that the first entry is an integer
+                    if len(splitLine) > len(self.logKeys) and self.isNumber(splitLine[0]):
+                        logEntry = {}
+                        for index in xrange(0, len(self.logKeys)):
+                            if index < len(self.logKeys) - 1:
+                                # Add this to the summary of the log
+                                if self.logSummary[self.logKeys[index]] is not None and splitLine[index] != '-':
+                                    self.logSummary[self.logKeys[index]].add(splitLine[index])
 
-                if m is not None:
-                    logEntry = m.groupdict()
-                    for key, value in self.logSummary:
-                        if value is not None:
-                            value.add(logEntry[key])
-                    self.log.append(logEntry)
+                                # Add this to the log data
+                                if splitLine[index] == '-':
+                                    logEntry[self.logKeys[index]] = None
+                                else:
+                                    logEntry[self.logKeys[index]] = splitLine[index]
+
+                            else:
+                                # Join the entire message (the remaining tokens on the line) and add it
+                                message = ' '.join(splitLine[index:])
+                                if self.logSummary[self.logKeys[index]] is not None:
+                                    self.logSummary[self.logKeys[index]].add(message)
+                                logEntry[self.logKeys[index]] = message
+
+                        self.log.append(logEntry)
+                    else:
+                        linesSkipped += 1
 
         # Convert summary to use lists rather than sets
         for key in self.logSummary:
             if self.logSummary[key] is not None:
                 self.logSummary[key] = list(self.logSummary[key])
+
+        logFile.close()
 
     def parse(self):
         """
