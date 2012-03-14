@@ -70,8 +70,8 @@ class IntrepidRASParserTest(unittest.TestCase):
         parsedData = self.parser.parse()
         summarizedData = self.parser.summarize()
 
-        self.assertEqual(parsedData, [])
-        self.assertEqual(summarizedData, IntrepidRASParserTest.emptySummarizedLog)
+        self.assertEqual([], parsedData)
+        self.assertEqual(IntrepidRASParserTest.emptySummarizedLog, summarizedData)
 
 
     def testParseInvalid(self):
@@ -84,8 +84,8 @@ class IntrepidRASParserTest(unittest.TestCase):
         parsedData = self.parser.parse()
         summarizedData = self.parser.summarize()
 
-        self.assertEqual(parsedData, [])
-        self.assertEqual(summarizedData, IntrepidRASParserTest.emptySummarizedLog)
+        self.assertEqual([], parsedData)
+        self.assertEqual(IntrepidRASParserTest.emptySummarizedLog, summarizedData)
 
 
     def testParseValidLog(self):
@@ -104,8 +104,8 @@ class IntrepidRASParserTest(unittest.TestCase):
         summarizedLog = self.parser.summarize()
 
         # Verify
-        self.assertEqual(summarizedLog, expectedSummarizedLog)
-        self.assertEqual(parsedLog, expectedParsedLog)
+        self.assertEqual(expectedSummarizedLog, summarizedLog)
+        self.assertEqual(expectedParsedLog, parsedLog)
 
 
 if __name__ == '__main__':
