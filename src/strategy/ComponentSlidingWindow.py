@@ -1,8 +1,8 @@
-from src.strategy.SlidingWindow import SlidingWindow
+from src.strategy.SlidingWindowStrategy import SlidingWindowStrategy
 
 __author__ = 'jon'
 
-class ComponentSlidingWindow(SlidingWindow):
+class ComponentSlidingWindowStrategy(SlidingWindowStrategy):
     """
       Class that holds prediction strategies based on a sliding window of log events. Specifically, this strategy
         uses SVM based on the sliding windows of intervals of several hours. Based on features of the last 4 windows,
@@ -18,13 +18,13 @@ class ComponentSlidingWindow(SlidingWindow):
 
     def parseWindowedLogData(self, windowedLogData):
         # TODO: Implement me!
-        super(ComponentSlidingWindow, self).parseWindowedLogData(windowedLogData)
+        super(ComponentSlidingWindowStrategy, self).parseWindowedLogData(windowedLogData)
 
     def learn(self, examples):
         # TODO: Implement me!
-        super(ComponentSlidingWindow, self).learn(examples)
+        super(ComponentSlidingWindowStrategy, self).learn(examples)
 
     def predict(self, features):
         # TODO: Implement me!
-        super(ComponentSlidingWindow, self).predict(features)
+        super(ComponentSlidingWindowStrategy, self).predict(features)
 

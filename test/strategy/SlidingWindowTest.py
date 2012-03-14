@@ -2,7 +2,7 @@ from datetime import timedelta
 from json import load
 import os
 import unittest
-from src.strategy.SlidingWindow import SlidingWindow
+from src.strategy.SlidingWindowStrategy import SlidingWindowStrategy
 
 __author__ = 'jon'
 
@@ -18,7 +18,7 @@ class SlidingWindowTest(unittest.TestCase):
         """
 
         self.projectRoot = os.environ['PROJECT_ROOT']
-        self.slidingWindowStrategy = SlidingWindow()
+        self.slidingWindowStrategy = SlidingWindowStrategy()
         self.maxDiff = 2000
 
         # Should have complicated split pattern with 5 hour default interval and 5 sub-windows

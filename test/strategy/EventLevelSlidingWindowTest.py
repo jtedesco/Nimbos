@@ -1,7 +1,7 @@
 from json import load
 import os
 import unittest
-from src.strategy.EventLevelSlidingWindow import EventLevelSlidingWindow
+from src.strategy.EventLevelSlidingWindowPositiveNegativeStrategy import EventLevelSlidingWindowStrategyPositiveNegativeStrategy
 from src.strategy.StrategyError import StrategyError
 
 __author__ = 'jon'
@@ -12,7 +12,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
     """
 
     def setUp(self):
-        self.eventLevelSlidingWindowStrategy = EventLevelSlidingWindow('TestData')
+        self.eventLevelSlidingWindowStrategy = EventLevelSlidingWindowStrategyPositiveNegativeStrategy('TestData')
 
         # Parsed training data for five sub-window example
         self.fiveSubWindowTrainingData = [

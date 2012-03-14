@@ -1,12 +1,12 @@
 from datetime import timedelta
 import os
 import subprocess
-from src.strategy.SlidingWindow import SlidingWindow
+from src.strategy.SlidingWindowStrategy import SlidingWindowStrategy
 from src.strategy.StrategyError import StrategyError
 
 __author__ = 'jon'
 
-class EventLevelSlidingWindow(SlidingWindow):
+class EventLevelSlidingWindowStrategyPositiveNegativeStrategy(SlidingWindowStrategy):
     """
       Class that holds prediction strategies based on a sliding window of log events. Specifically, this strategy
         uses SVM based on the sliding windows of intervals of several hours. Based on features of the last 4 windows,
@@ -24,15 +24,15 @@ class EventLevelSlidingWindow(SlidingWindow):
 
     def __init__(self, dataSetName, windowDelta=timedelta(hours=5), numberOfSubWindows=5, severities=None, severityKeyword=None):
 
-        super(EventLevelSlidingWindow, self).__init__(windowDelta, numberOfSubWindows)
+        super(EventLevelSlidingWindowStrategyPositiveNegativeStrategy, self).__init__(windowDelta, numberOfSubWindows)
 
         self.severities = severities or ['INFO', 'WARN', 'ERROR', 'FATAL']
         self.severityKey = severityKeyword or 'SEVERITY'
 
-        self.trainingFileName = dataSetName + ' - ' + EventLevelSlidingWindow.STRATEGY_NAME + 'Training'
-        self.modelFileName = dataSetName + ' - ' + EventLevelSlidingWindow.STRATEGY_NAME + 'Model'
-        self.predictionsInputFileName = dataSetName + ' - ' + EventLevelSlidingWindow.STRATEGY_NAME + 'PredictionsIn'
-        self.predictionsOutputFileName = dataSetName + ' - ' + EventLevelSlidingWindow.STRATEGY_NAME + 'PredictionsOut'
+        self.trainingFileName = dataSetName + ' - ' + EventLevelSlidingWindowStrategyPositiveNegativeStrategy.STRATEGY_NAME + 'Training'
+        self.modelFileName = dataSetName + ' - ' + EventLevelSlidingWindowStrategyPositiveNegativeStrategy.STRATEGY_NAME + 'Model'
+        self.predictionsInputFileName = dataSetName + ' - ' + EventLevelSlidingWindowStrategyPositiveNegativeStrategy.STRATEGY_NAME + 'PredictionsIn'
+        self.predictionsOutputFileName = dataSetName + ' - ' + EventLevelSlidingWindowStrategyPositiveNegativeStrategy.STRATEGY_NAME + 'PredictionsOut'
 
         self.dataSetName = dataSetName
 
