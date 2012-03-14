@@ -1,5 +1,6 @@
 from datetime import timedelta
 from json import load
+import os
 import unittest
 from src.strategy.SlidingWindow import SlidingWindow
 
@@ -10,16 +11,18 @@ class SlidingWindowTest(unittest.TestCase):
       Unit tests for the SlidingWindow class
     """
 
-    # Should have complicated split pattern with 5 hour default interval and 5 sub-windows
-    mockLogData = load(open('slidingWindow/json/MockLogData.json'))
-
 
     def setUp(self):
         """
           Reconstruct a new sliding window strategy object each iteration
         """
+
+        self.projectRoot = os.environ['PROJECT_ROOT']
         self.slidingWindowStrategy = SlidingWindow()
         self.maxDiff = 2000
+
+        # Should have complicated split pattern with 5 hour default interval and 5 sub-windows
+        self.mockLogData = load(open(self.projectRoot + '/test/strategy/slidingWindow/json/MockLogData.json'))
 
 
     def testParseTrainingDataWithEmptyData(self):
@@ -52,10 +55,10 @@ class SlidingWindowTest(unittest.TestCase):
         #   4) 2009-08-31-16.00.00.000000
         #   5) 2009-08-31-21.00.00.000000
         #   6) 2009-09-01-01.00.00.000000
-        expectedWindowedData = load(open('slidingWindow/json/ExpectedWindowedData.json'))
+        expectedWindowedData = load(open(self.projectRoot + '/test/strategy/slidingWindow/json/ExpectedWindowedData.json'))
 
         # Test
-        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(SlidingWindowTest.mockLogData[:-1])
+        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(self.mockLogData[:-1])
 
         # Verify
         self.assertEqual(expectedWindowedData, actualWindowedData)
@@ -75,10 +78,10 @@ class SlidingWindowTest(unittest.TestCase):
         #   1.4) 2009-08-31-16.00.00.000000
         #   1.5) 2009-08-31-21.00.00.000000
         #   2.1) 2009-09-01-01.00.00.000000
-        expectedWindowedData = load(open('slidingWindow/json/ExpectedExtendedLogWindows.json'))
+        expectedWindowedData = load(open(self.projectRoot + '/test/strategy/slidingWindow/json/ExpectedExtendedLogWindows.json'))
 
         # Test
-        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(SlidingWindowTest.mockLogData)
+        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(self.mockLogData)
 
         # Verify
         self.assertEqual(expectedWindowedData, actualWindowedData)
@@ -102,10 +105,10 @@ class SlidingWindowTest(unittest.TestCase):
         #   2.2) 2009-09-01-01.00.00.000000
         #   2.3) 2009-09-01-05.00.00.000000
         #   2.4) 2009-09-01-07.00.00.000000 (the last entry)
-        expectedWindowedData = load(open('slidingWindow/json/ExpectedExtendedModifiedIntervalLogWindows.json'))
+        expectedWindowedData = load(open(self.projectRoot + '/test/strategy/slidingWindow/json/ExpectedExtendedModifiedIntervalLogWindows.json'))
 
         # Test
-        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(SlidingWindowTest.mockLogData)
+        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(self.mockLogData)
 
         # Verify
         self.assertEqual(expectedWindowedData, actualWindowedData)
@@ -130,11 +133,10 @@ class SlidingWindowTest(unittest.TestCase):
         #   2.1) 2009-09-01-01.00.00.000000
         #   2.2) 2009-09-01-05.00.00.000000
         #   2.3) 2009-09-01-07.00.00.000000 (the last entry)
-        expectedWindowedData = load(
-            open('slidingWindow/json/ExpectedExtendedModifiedIntervalAndSubWindowsLogWindows.json'))
+        expectedWindowedData = load(open(self.projectRoot + '/test/strategy/slidingWindow/json/ExpectedExtendedModifiedIntervalAndSubWindowsLogWindows.json'))
 
         # Test
-        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(SlidingWindowTest.mockLogData)
+        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(self.mockLogData)
 
         # Verify
         self.assertEqual(expectedWindowedData, actualWindowedData)
