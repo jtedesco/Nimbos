@@ -14,9 +14,9 @@ def evaluateBinaryPredictions(correctLabels, predictions):
         raise Exception('Error evaluating binary predictions: mismatched lengths for correct label & prediction lists!')
 
     # Tallies the possible outcomes of each prediction
-    mispredictedFailures = 0
+    misPredictedFailures = 0
     predictedFailures = 0
-    mispredictedNonFailures = 0
+    misPredictedNonFailures = 0
     predictedNonFailures = 0
     totalEvents = len(correctLabels)
 
@@ -25,17 +25,17 @@ def evaluateBinaryPredictions(correctLabels, predictions):
         if correctLabel and prediction:
             predictedFailures += 1
         elif correctLabel and not prediction:
-            mispredictedFailures += 1
-        elif not correctLabel and notprediction:
+            misPredictedFailures += 1
+        elif not correctLabel and not prediction:
             predictedNonFailures += 1
         else:
-            mispredictedNonFailures += 1
+            misPredictedNonFailures += 1
 
     # Calculate interesting metrics
     totalAccuracy = float(predictedNonFailures + predictedFailures) / float(totalEvents)
-    failureAccuracy = float(predictedFailures) / float(predictedFailures + mispredictedFailures)
-    nonFailureAccuracy = float(predictedNonFailures) / float(predictedNonFailures + mispredictedNonFailures)
-    totalFailures = mispredictedFailures + predictedFailures
+    failureAccuracy = float(predictedFailures) / float(predictedFailures + misPredictedFailures)
+    nonFailureAccuracy = float(predictedNonFailures) / float(predictedNonFailures + misPredictedNonFailures)
+    totalFailures = misPredictedFailures + predictedFailures
     failurePercentage = float(totalFailures) / float(totalEvents)
 
     return {
@@ -46,9 +46,9 @@ def evaluateBinaryPredictions(correctLabels, predictions):
             'failurePercentage': failurePercentage
         },
         'counts': {
-            'mispredictedFailures': mispredictedFailures,
+            'mispredictedFailures': misPredictedFailures,
             'predictedFailures': predictedFailures,
-            'misPredictedNonFailures': mispredictedNonFailures,
+            'misPredictedNonFailures': misPredictedNonFailures,
             'predictedNonFailures': predictedNonFailures,
             'totalFailures': totalFailures,
             'totalEvents': totalEvents,

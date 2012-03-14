@@ -6,34 +6,30 @@ from src.strategy.EventLevelSlidingWindow import EventLevelSlidingWindow
 __author__ = 'jon'
 
 if __name__ == '__main__':
-
-    # Find the project root
     projectRoot = os.environ['PROJECT_ROOT']
 
     # The experiments to run (strategy, parser, model file name)
     experiments = [
-        (EventLevelSlidingWindow('BlueGeneRAS'), IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'), IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'))
+        (EventLevelSlidingWindow('BlueGeneRAS'), IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'))
     ]
 
     # Run each experiment, only learning the model if it doesn't already exist
     for strategy, parser, testFileParser in experiments:
-
-        # If the model file doesn't exist, train the model and save it, otherwise open the learned model
         modelFilePath = projectRoot + '/model/' + strategy.dataSetName + ' - SVMFatalInLastWindowModel'
-        if not os.path.exists(modelFilePath):
 
+        # If the model hasn't been learned, learn it, otherwise just load it
+        if not os.path.exists(modelFilePath):
             parsedLogData = parser.parse()
             testData = strategy.parseData(parsedLogData)
-
             model = strategy.learn(testData)
-
         else:
             strategy.loadModel(modelFilePath)
 
+
+        # Gather test data & use the model to predict labels
         parsedLogData = testFileParser.parse()
         testData = strategy.parseData(parsedLogData)
-
-        testData = testData[:20]
 
         strategy.predict(testData)
 
@@ -46,22 +42,25 @@ if __name__ == '__main__':
         predictionsValues = open(strategy.predictionsOutputFileName).read().split('\n')
         predictions = []
         for predictionValue in predictionsValues:
-            if float(predictionValue) < 0:
-                predictions.append(False)
-            else:
-                predictions.append(True)
+            if len(predictionValue) > 0:
+                if float(predictionValue) < 0:
+                    predictions.append(False)
+                else:
+                    predictions.append(True)
 
+        # Remove the predictions output file (cleanup)
         os.remove(strategy.predictionsOutputFileName)
 
+        # Gather basic percentages & counts of performance of model
         evaluations = evaluateBinaryPredictions(correctLabels, predictions)
 
         # Print stats about the prediction accuracy
         print "Percentages:"
         print "------------"
-        for percentage in evaluations['percentages']:
-            print "\t%2.2f" % percentage
+        for percentageMetric in evaluations['percentages']:
+            print "\t%s:  %2.2f" % (percentageMetric, evaluations['percentages'][percentageMetric])
         print
         print "Raw Counts:"
         print "-----------"
-        for count in evaluations['counts']:
-            print "\t%d" % count
+        for countMetric in evaluations['counts']:
+            print "\t%s:  %d" % (countMetric, evaluations['counts'][countMetric])
