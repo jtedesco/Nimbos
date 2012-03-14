@@ -3,7 +3,7 @@ from src.PredictionStrategy import PredictionStrategy
 
 __author__ = 'jon'
 
-class SlidingWindow(PredictionStrategy):
+class SlidingWindowStrategy(PredictionStrategy):
     """
       Class that holds prediction strategies based on a sliding window of log events. Specifically, this strategy
         uses SVM based on the sliding windows of intervals of several hours. Based on features of the last 4 windows,
@@ -17,7 +17,7 @@ class SlidingWindow(PredictionStrategy):
             @param  numberOfSubWindows  The number of sub-windows to use in a sliding window
         """
 
-        super(SlidingWindow, self).__init__()
+        super(SlidingWindowStrategy, self).__init__()
 
         # The format to which timestamps are expected to adhere
         self.TIMESTAMP_FORMAT = "%Y-%m-%d-%H.%M.%S.%f"
@@ -26,9 +26,9 @@ class SlidingWindow(PredictionStrategy):
         self.numberOfSubWindows = numberOfSubWindows
 
 
-    def parseTrainingData(self, data):
+    def parseData(self, data):
         """
-          Parse the training log data. All log entries are expected to contain an EVENT_TIME entry, which contains a
+          Parse the training/test log data. All log entries are expected to contain an EVENT_TIME entry, which contains a
            timestamp of the event formatted as "%Y-%m-%d-%H.%M.%S.%f", or Year-Month-Day-Hour.Minute.Second.Millisecond.
         """
 
