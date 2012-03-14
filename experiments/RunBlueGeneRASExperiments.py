@@ -12,11 +12,11 @@ if __name__ == '__main__':
     # The experiments to run (strategy, parser, model file name)
     experiments = [
         (EventLevelStrategy('BlueGeneRASPosNeg5SubWindows5Hours'),
-          IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
-          IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
         (EventLevelStrategy('BlueGeneRASPosNeut5SubWindows5Hours', negativeLabels=False),
-          IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
-          IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
+         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
         (EventLevelStrategy('BlueGeneRASPosNeg3SubWindows5Hours', numberOfSubWindows=3),
          IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
          IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
