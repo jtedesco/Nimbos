@@ -1,6 +1,10 @@
 __author__ = 'Roman'
 
 def parse(logFilePath, logKeys, skipFirstLines=0):
+    with open(logFilePath, "rb") as logFile:
+        return _parse(logFile, logKeys, skipFirstLines)
+
+def _parse(input, logKeys, skipFirstLines=0):
     """
       Parses the log data, expecting that every field starts at the same index on every
       line. This is good for log files organized as a table, where the spacing between
@@ -15,33 +19,32 @@ def parse(logFilePath, logKeys, skipFirstLines=0):
       @return a list of dictionaries of the log data
     """
     log = []
+    lineNumber = 0
 
-    #iterate over lines in file
-    with open(logFilePath, "rb") as logFile:
+    for line in input:
+        lineNumber += 1
 
         #skip first lines
-        for i in range(skipFirstLines):
-            logFile.readline()
+        if lineNumber <= skipFirstLines:
+            continue
 
-        #read log data
-        for line in logFile:
-            logEntry = {}
+        logEntry = {}
 
-            for i in range(len(logKeys)):
-                name, startIndex = logKeys[i]
+        for i in range(len(logKeys)):
+            name, startIndex = logKeys[i]
 
-                endIndex = 0
-                if i == len(logKeys)-1:
-                    endIndex = len(line)
-                else:
-                    endIndex = logKeys[i+1][1]
-
-                #if this condition occurs, the line is probably an empty line
-                if endIndex > len(line):
-                    break
-
-                logEntry[name] = line[startIndex:endIndex].strip()
+            endIndex = 0
+            if i == len(logKeys) - 1:
+                endIndex = len(line)
             else:
-                log.append(logEntry)
+                endIndex = logKeys[i + 1][1]
+
+            #if this condition occurs, the line is probably an empty line
+            if endIndex > len(line):
+                break
+
+            logEntry[name] = line[startIndex:endIndex].strip()
+        else:
+            log.append(logEntry)
 
     return log

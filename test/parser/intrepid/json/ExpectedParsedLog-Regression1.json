@@ -1,0 +1,19 @@
+[
+    {
+        "RECID":"26520396",
+        "MSG_ID":"KERN_0115",
+        "COMPONENT":"KERNEL",
+        "SUBCOMPONENT":"_bgp_unit_ppc450",
+        "ERRCODE":"_bgp_err_ppc450_l1i_tpe1",
+        "SEVERITY":"INFO",
+        "EVENT_TIME":"2009-03-03-04.11.41.106760",
+        "FLAGS":"",
+        "PROCESSOR":"3",
+        "NODE":"",
+        "BLOCK":"ANL-R12-1024",
+        "LOCATION":"R12-M0-N02-J14",
+        "SERIALNUMBER":"44V3572YL12K729005B",
+        "ECID":"",
+        "MESSAGE":"There would be a message here...."
+    }
+]

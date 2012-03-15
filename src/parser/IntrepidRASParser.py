@@ -3,6 +3,8 @@ from src.parser import TableParser
 
 __author__ = 'Roman'
 
+MAGIC_LINE_NUMBER = 274524
+
 def parse(logFilePath):
     """
       Parser for Blue Gene/P RAS log data from Intrepid. These logs are structured with the following fields
@@ -26,7 +28,7 @@ def parse(logFilePath):
     """
 
     # Describes the order if columns in which the keys appear in the log
-    logKeys = [
+    logKeys_part1 = [
         ('RECID', 3),
         ('MSG_ID', 12),
         ('COMPONENT', 23),
@@ -43,11 +45,47 @@ def parse(logFilePath):
         ('ECID', 291),
         ('MESSAGE', 323)
     ]
-    return TableParser.parse(logFilePath, logKeys, skipFirstLines=5)
+    logKeys_part2 = [
+        ('RECID', 3),
+        ('MSG_ID', 13),
+        ('COMPONENT', 26),
+        ('SUBCOMPONENT', 45),
+        ('ERRCODE', 68),
+        ('SEVERITY', 111),
+        ('EVENT_TIME', 122),
+        ('PROCESSOR', 151),
+        ('BLOCK', 155),
+        ('LOCATION', 190),
+        ('SERIALNUMBER', 257),
+        ('ECID', 279),
+        ('MESSAGE', 296)
+    ]
+    
+    def part1():
+        lineNumber = 0
+        with open(logFilePath, "rb") as logFile:
+            for line in logFile:
+                lineNumber += 1
+                if lineNumber < MAGIC_LINE_NUMBER:
+                    yield line
+                else:
+                    break
+
+    def part2():
+        lineNumber = 0
+        with open(logFilePath, "rb") as logFile:
+            for line in logFile:
+                lineNumber += 1
+                if lineNumber >= MAGIC_LINE_NUMBER:
+                    yield line
+    
+    log = TableParser._parse(part1(), logKeys_part1, skipFirstLines=5)
+    log.extend(TableParser._parse(part2(), logKeys_part2, skipFirstLines=0))
+    return log
+    
 
 if __name__ == '__main__':
     projectRoot = os.environ['PROJECT_ROOT']
     log = parse(projectRoot + '/log/BlueGeneRAS.log')
     print len(log)
-    for entry in log:
-        print entry
+    print log[len(log)/2]

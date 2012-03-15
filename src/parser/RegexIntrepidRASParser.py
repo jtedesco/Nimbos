@@ -22,9 +22,9 @@ def parse(logFilePath):
         ('ERRCODE', "\w+"),
         ('SEVERITY', "\w+"),
         ('EVENT_TIME', "[0-9.-]+"),
-        ('FLAGS', "[ -]"),w
+        ('FLAGS', "[-]"),
         ('PROCESSOR', "\w+"),
-        ('NODE', "[ -]"),
+        ('NODE', "[-]"),
         ('BLOCK', "[a-zA-Z0-9_-]+"),
         ('LOCATION', "[a-zA-Z0-9_-]+"),
         ('SERIALNUMBER', "[0-9A-Z]+"),

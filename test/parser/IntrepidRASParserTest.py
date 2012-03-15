@@ -65,6 +65,21 @@ class IntrepidRASParserTest(unittest.TestCase):
         self.assertEqual(expectedParsedLog, parsedLog)
         self.assertEqual(expectedSummarizedLog, summarizedLog)
 
+    def testRegressionTestEmptyFields(self):
+        """
+            Test the case where an row with fields missing is still captured correctly
+        """
+
+        #Setup
+        expectedSummarizedLog = load(open(self.projectRoot + '/test/parser/intrepid/json/ExpectedSummarizedLog-Regression1.json'))
+        expectedParsedLog = load(open(self.projectRoot + '/test/parser/intrepid/json/ExpectedParsedLog-Regression1.json'))
+        logPath = self.projectRoot + '/test/parser/intrepid/log/SampleLog-Regression1'
+        self.maxDiff = 2000
+
+        #Test
+        parsedLog = IntrepidRASParser.parse(logPath)
+
+        self.assertEqual(expectedParsedLog, parsedLog)
 
 if __name__ == '__main__':
     unittest.main()
