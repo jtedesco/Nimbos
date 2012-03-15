@@ -22,7 +22,7 @@ def parse(logFilePath):
         ('ERRCODE', "\w+"),
         ('SEVERITY', "\w+"),
         ('EVENT_TIME', "[0-9.-]+"),
-        ('FLAGS', "[ -]"),
+        ('FLAGS', "[ -]"),w
         ('PROCESSOR', "\w+"),
         ('NODE', "[ -]"),
         ('BLOCK', "[a-zA-Z0-9_-]+"),

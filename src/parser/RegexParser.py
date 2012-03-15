@@ -19,13 +19,16 @@ def parse(logFilePath, logKeys, delim="\s+", skipFirstLines=0, warnings=False, l
     """
 
     #create regular expression
-    regex_string = ""
+    regex_string = "^"
     for name, elem_regex in logKeys:
-        if regex_string != "":
+        if regex_string != "^":
             regex_string += delim
         regex_string += "(?P<" + name + ">" + elem_regex + ")"
 
+    #compile regex
+    regex_string += "$"
     regex = re.compile(regex_string)
+
     log = []
     lineNumber = 0
     skippedLines = 0

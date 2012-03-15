@@ -42,3 +42,19 @@ class RegexParserTest(unittest.TestCase):
         # Verify
         self.assertEqual(expectedParsedLog, parsedLog)
         self.assertEqual(expectedSummarizedLog, summarizedLog)
+
+    def testParseInvalidLog(self):
+        """
+            Test that parsing a log file where the regex does not match returns an empty log
+        """
+
+        #Setup
+        logPath = self.projectRoot + '/test/parser/regex/log/InvalidLog'
+
+        #Test
+        parsedLog = RegexParser.parse(logPath, self.regexKeys, skipFirstLines=2)
+        summarizedLog = Util.summary(parsedLog)
+
+        #Verify
+        self.assertEqual([], parsedLog)
+        self.assertEqual({}, summarizedLog)
