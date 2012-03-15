@@ -29,7 +29,7 @@ def parse(logFilePath):
     """
 
     # Describes the exact character location of each column from the log file
-    logKeys_part1 = [
+    logKeysPart1 = [
         ('RECID', 3),
         ('MSG_ID', 12),
         ('COMPONENT', 23),
@@ -46,7 +46,7 @@ def parse(logFilePath):
         ('ECID', 291),
         ('MESSAGE', 323)
     ]
-    logKeys_part2 = [
+    logKeysPart2 = [
         ('RECID', 3),
         ('MSG_ID', 13),
         ('COMPONENT', 26),
@@ -88,8 +88,8 @@ def parse(logFilePath):
                 if lineNumber >= MAGIC_LINE_NUMBER:
                     yield line
 
-    log = TableParser._parse(part1(), logKeys_part1, skipFirstLines=5)
-    log.extend(TableParser._parse(part2(), logKeys_part2))
+    log = TableParser.parseHelper(part1(), logKeysPart1, skipFirstLines=5)
+    log.extend(TableParser.parseHelper(part2(), logKeysPart2))
     return log
 
 

@@ -9,51 +9,32 @@ __author__ = 'jon'
 if __name__ == '__main__':
     projectRoot = os.environ['PROJECT_ROOT']
 
-    # The experiments to run (strategy, parser, model file name)
+    # The experiments to run
     experiments = [
-        (EventLevelStrategy('BlueGeneRASPosNeg5SubWindows5Hours'),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
-        (EventLevelStrategy('BlueGeneRASPosNeut5SubWindows5Hours', negativeLabels=False),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
-        (EventLevelStrategy('BlueGeneRASPosNeg3SubWindows5Hours', numberOfSubWindows=3),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
-        (EventLevelStrategy('BlueGeneRASPosNeut3SubWindows5Hours', negativeLabels=False, numberOfSubWindows=3),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
-        (EventLevelStrategy('BlueGeneRASPosNeg7SubWindows5Hours', numberOfSubWindows=7),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
-        (EventLevelStrategy('BlueGeneRASPosNeg5SubWindows3Hours', windowDelta=timedelta(hours=3)),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
-        (EventLevelStrategy('BlueGeneRASPosNeg3SubWindows3Hours', numberOfSubWindows=3, windowDelta=timedelta(hours=3)),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
-        (EventLevelStrategy('BlueGeneRASPosNeg7SubWindows3Hours', numberOfSubWindows=7, windowDelta=timedelta(hours=3)),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
-        (EventLevelStrategy('BlueGeneRASPosNeg5SubWindows7Hours', windowDelta=timedelta(hours=7)),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
-        (EventLevelStrategy('BlueGeneRASPosNeg3SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=3),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log')),
-        (EventLevelStrategy('BlueGeneRASPosNeg7SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=7),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'),
-         IntrepidRASParser(projectRoot + '/log/BlueGeneRAS.log'))
+        EventLevelStrategy('BlueGeneRASPosNeg5SubWindows5Hours'),
+        EventLevelStrategy('BlueGeneRASPosNeut5SubWindows5Hours', negativeLabels=False),
+        EventLevelStrategy('BlueGeneRASPosNeg3SubWindows5Hours', numberOfSubWindows=3),
+        EventLevelStrategy('BlueGeneRASPosNeut3SubWindows5Hours', negativeLabels=False, numberOfSubWindows=3),
+        EventLevelStrategy('BlueGeneRASPosNeg7SubWindows5Hours', numberOfSubWindows=7),
+        EventLevelStrategy('BlueGeneRASPosNeg5SubWindows3Hours', windowDelta=timedelta(hours=3)),
+        EventLevelStrategy('BlueGeneRASPosNeg3SubWindows3Hours', numberOfSubWindows=3, windowDelta=timedelta(hours=3)),
+        EventLevelStrategy('BlueGeneRASPosNeg7SubWindows3Hours', numberOfSubWindows=7, windowDelta=timedelta(hours=3)),
+        EventLevelStrategy('BlueGeneRASPosNeg5SubWindows7Hours', windowDelta=timedelta(hours=7)),
+        EventLevelStrategy('BlueGeneRASPosNeg3SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=3),
+        EventLevelStrategy('BlueGeneRASPosNeg7SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=7),
     ]
 
+    # The path to the log file to use
+    logFilePath = projectRoot + '/log/BlueGeneRAS.log'
+
     # Run each experiment, only learning the model if it doesn't already exist
-    for strategy, parser, testFileParser, logfile in experiments:
+    for strategy in experiments:
         modelFilePath = projectRoot + '/model/' + strategy.dataSetName + ' - SVMFatalInLastWindowModel'
 
         # If the model hasn't been learned, learn it, otherwise just load it
         if not os.path.exists(modelFilePath):
 
-            parsedLogData = parser(logfile)
+            parsedLogData = IntrepidRASParser.parse(logFilePath)
             testData = strategy.parseData(parsedLogData)
             model = strategy.learn(testData)
 
@@ -67,7 +48,7 @@ if __name__ == '__main__':
 
 
         # Gather test data & use the model to predict labels
-        parsedLogData = testFileParser(logfile)
+        parsedLogData = IntrepidRASParser.parse(logFilePath)
         testData = strategy.parseData(parsedLogData)
 
         strategy.predict(testData)
@@ -114,5 +95,3 @@ if __name__ == '__main__':
 
         # Force Python to free the memory for these items, or the program will crash
         del strategy
-        #del parser
-        #del testFileParser

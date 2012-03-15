@@ -2,10 +2,10 @@ __author__ = 'Roman'
 
 def parse(logFilePath, logKeys, skipFirstLines=0):
     with open(logFilePath, "rb") as logFile:
-        return _parse(logFile, logKeys, skipFirstLines)
+        return parseHelper(logFile, logKeys, skipFirstLines)
 
 
-def _parse(input, logKeys, skipFirstLines=0):
+def parseHelper(input, logKeys, skipFirstLines=0):
     """
       Parses the log data, expecting that every field starts at the same index on every
       line. This is good for log files organized as a table, where the spacing between
