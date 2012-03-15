@@ -89,9 +89,12 @@ def parse(logFilePath):
                 if lineNumber >= MAGIC_LINE_NUMBER:
                     yield line
 
+    #first half of log
     log = TableParser.parseHelper(part1(), logKeysPart1, skipFirstLines=5)
+    #second half of log
     log.extend(TableParser.parseHelper(part2(), logKeysPart2))
 
+    #clean out bad logs
     regex = re.compile("^\d+$")
     cleanLog = []
     for entry in log:

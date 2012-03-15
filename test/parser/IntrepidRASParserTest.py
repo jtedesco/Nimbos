@@ -82,5 +82,19 @@ class IntrepidRASParserTest(unittest.TestCase):
 
         self.assertEqual(expectedParsedLog, parsedLog)
 
+    def testRegressionTestBadFields(self):
+        """
+            Tests that invalid log are now accepted, such as where the ID is not a number
+        """
+
+        #Setup
+        logPath = self.projectRoot + '/test/parser/intrepid/log/SampleLog-Regression2'
+        self.maxDiff = 2000
+
+        #Test
+        parsedLog = IntrepidRASParser.parse(logPath)
+
+        self.assertEqual([], parsedLog)
+
 if __name__ == '__main__':
     unittest.main()
