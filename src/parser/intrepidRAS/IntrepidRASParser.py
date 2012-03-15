@@ -1,4 +1,5 @@
 import os
+import re
 from src.parser import TableParser
 
 __author__ = 'Roman'
@@ -90,7 +91,14 @@ def parse(logFilePath):
 
     log = TableParser.parseHelper(part1(), logKeysPart1, skipFirstLines=5)
     log.extend(TableParser.parseHelper(part2(), logKeysPart2))
-    return log
+
+    regex = re.compile("^\d+$")
+    cleanLog = []
+    for entry in log:
+        if regex.match(entry['RECID']):
+            cleanLog.append(entry)
+
+    return cleanLog
 
 
 if __name__ == '__main__':
