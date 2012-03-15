@@ -1,0 +1,12 @@
+[
+    {
+        "ID":"123",
+        "NAME":"Joe Schmoe",
+        "TELEPHONE":"2171234567"
+    },
+    {
+        "ID":"124",
+        "NAME":"Bobby Smith",
+        "TELEPHONE":"2179876543"
+    }
+]

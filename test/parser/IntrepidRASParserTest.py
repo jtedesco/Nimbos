@@ -1,35 +1,14 @@
 from json import load
 import os
-from src.parser.IntrepidRASParser import IntrepidRASParser
+import unittest
+from src.parser import IntrepidRASParser, Util
 
 __author__ = 'jon'
-
-import unittest
 
 class IntrepidRASParserTest(unittest.TestCase):
     """
       Unit tests for the IntrepidRASParser class
     """
-
-    # The expected empty summarized log
-    emptySummarizedLog = {
-        'RECID': None,
-        'MSG_ID': [],
-        'COMPONENT': [],
-        'SUBCOMPONENT': [],
-        'ERRCODE': [],
-        'SEVERITY': [],
-        'EVENT_TIME': None,
-        'FLAGS': [],
-        'PROCESSOR': [],
-        'NODE': [],
-        'BLOCK': [],
-        'LOCATION': [],
-        'SERIALNUMBER': [],
-        'ECID': [],
-        'MESSAGE': []
-    }
-
 
     def setUp(self):
         """
@@ -37,29 +16,6 @@ class IntrepidRASParserTest(unittest.TestCase):
         """
 
         self.projectRoot = os.environ['PROJECT_ROOT']
-        self.parser = IntrepidRASParser()
-
-
-    def testIsNumberWithIntegers(self):
-        """
-          Test that 'isNumber' works with explicit and implicit positive and negative integers
-        """
-
-        self.assertTrue(self.parser.isNumber('10'))
-        self.assertTrue(self.parser.isNumber('-10'))
-        self.assertTrue(self.parser.isNumber('+20'))
-        self.assertTrue(self.parser.isNumber('-60'))
-
-
-    def testIsNumberWithFloats(self):
-        """
-          Test that 'isNumber' works with explicit and implicit positive and negative floats
-        """
-
-        self.assertTrue(self.parser.isNumber('1.0'))
-        self.assertTrue(self.parser.isNumber('-1.0'))
-        self.assertTrue(self.parser.isNumber('+2.0'))
-        self.assertTrue(self.parser.isNumber('-6.0'))
 
 
     def testParseEmpty(self):
@@ -67,13 +23,13 @@ class IntrepidRASParserTest(unittest.TestCase):
           Test that parsing an empty log results in empty summarized and log data
         """
 
-        self.parser.logPath = self.projectRoot + '/test/parser/intrepid/log/SampleEmptyLog'
+        logPath = self.projectRoot + '/test/parser/intrepid/log/SampleEmptyLog'
 
-        parsedData = self.parser.parse()
-        summarizedData = self.parser.summarize()
+        parsedData = IntrepidRASParser.parse(logPath)
+        summarizedData = Util.summary(parsedData)
 
         self.assertEqual([], parsedData)
-        self.assertEqual(IntrepidRASParserTest.emptySummarizedLog, summarizedData)
+        self.assertEqual({}, summarizedData)
 
 
     def testParseInvalid(self):
@@ -81,13 +37,13 @@ class IntrepidRASParserTest(unittest.TestCase):
           Test that parsing an invalid log results in empty summarized and log data
         """
 
-        self.parser.logPath = self.projectRoot + '/test/parser/intrepid/log/SampleInvalidLog'
+        logPath = self.projectRoot + '/test/parser/intrepid/log/SampleInvalidLog'
 
-        parsedData = self.parser.parse()
-        summarizedData = self.parser.summarize()
+        parsedData = IntrepidRASParser.parse(logPath)
+        summarizedData = Util.summary(parsedData)
 
         self.assertEqual([], parsedData)
-        self.assertEqual(IntrepidRASParserTest.emptySummarizedLog, summarizedData)
+        self.assertEqual({}, summarizedData)
 
 
     def testParseValidLog(self):
@@ -98,16 +54,16 @@ class IntrepidRASParserTest(unittest.TestCase):
         # Setup
         expectedSummarizedLog = load(open(self.projectRoot + '/test/parser/intrepid/json/ExpectedSummarizedLog.json'))
         expectedParsedLog = load(open(self.projectRoot + '/test/parser/intrepid/json/ExpectedParsedLog.json'))
-        self.parser.logPath = self.projectRoot + '/test/parser/intrepid/log/SampleLog'
+        logPath = self.projectRoot + '/test/parser/intrepid/log/SampleLog'
         self.maxDiff = 2000
 
         # Test
-        parsedLog = self.parser.parse()
-        summarizedLog = self.parser.summarize()
+        parsedLog = IntrepidRASParser.parse(logPath)
+        summarizedLog = Util.summary(parsedLog)
 
         # Verify
-        self.assertEqual(expectedSummarizedLog, summarizedLog)
         self.assertEqual(expectedParsedLog, parsedLog)
+        self.assertEqual(expectedSummarizedLog, summarizedLog)
 
 
 if __name__ == '__main__':
