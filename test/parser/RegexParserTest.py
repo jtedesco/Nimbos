@@ -1,7 +1,7 @@
 from json import load
 import os
 import unittest
-from src.parser import Util, RegexParser
+from src.parser import ParserUtil, RegexParser
 
 __author__ = 'Roman'
 
@@ -37,7 +37,7 @@ class RegexParserTest(unittest.TestCase):
 
         # Test
         parsedLog = RegexParser.parse(logPath, self.regexKeys, skipFirstLines=2)
-        summarizedLog = Util.summary(parsedLog)
+        summarizedLog = ParserUtil.summary(parsedLog)
 
         # Verify
         self.assertEqual(expectedParsedLog, parsedLog)
@@ -53,7 +53,7 @@ class RegexParserTest(unittest.TestCase):
 
         #Test
         parsedLog = RegexParser.parse(logPath, self.regexKeys, skipFirstLines=2)
-        summarizedLog = Util.summary(parsedLog)
+        summarizedLog = ParserUtil.summary(parsedLog)
 
         #Verify
         self.assertEqual([], parsedLog)

@@ -1,7 +1,7 @@
 from json import load
 import os
 import unittest
-from src.parser import Util, TableParser
+from src.parser import ParserUtil, TableParser
 
 __author__ = 'Roman'
 
@@ -37,7 +37,7 @@ class TableParserTest(unittest.TestCase):
 
         # Test
         parsedLog = TableParser.parse(logPath, self.tableKeys, skipFirstLines=2)
-        summarizedLog = Util.summary(parsedLog)
+        summarizedLog = ParserUtil.summary(parsedLog)
 
         # Verify
         self.assertEqual(expectedParsedLog, parsedLog)

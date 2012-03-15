@@ -1,7 +1,8 @@
 from json import load
 import os
 import unittest
-from src.parser import IntrepidRASParser, Util
+from src.parser import  ParserUtil
+from src.parser.intrepidRAS import IntrepidRASParser
 
 __author__ = 'jon'
 
@@ -26,7 +27,7 @@ class IntrepidRASParserTest(unittest.TestCase):
         logPath = self.projectRoot + '/test/parser/intrepid/log/SampleEmptyLog'
 
         parsedData = IntrepidRASParser.parse(logPath)
-        summarizedData = Util.summary(parsedData)
+        summarizedData = ParserUtil.summary(parsedData)
 
         self.assertEqual([], parsedData)
         self.assertEqual({}, summarizedData)
@@ -40,7 +41,7 @@ class IntrepidRASParserTest(unittest.TestCase):
         logPath = self.projectRoot + '/test/parser/intrepid/log/SampleInvalidLog'
 
         parsedData = IntrepidRASParser.parse(logPath)
-        summarizedData = Util.summary(parsedData)
+        summarizedData = ParserUtil.summary(parsedData)
 
         self.assertEqual([], parsedData)
         self.assertEqual({}, summarizedData)
@@ -59,7 +60,7 @@ class IntrepidRASParserTest(unittest.TestCase):
 
         # Test
         parsedLog = IntrepidRASParser.parse(logPath)
-        summarizedLog = Util.summary(parsedLog)
+        summarizedLog = ParserUtil.summary(parsedLog)
 
         # Verify
         self.assertEqual(expectedParsedLog, parsedLog)

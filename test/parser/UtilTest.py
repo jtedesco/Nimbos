@@ -1,6 +1,6 @@
 import unittest
 import os
-from src.parser import Util
+from src.parser import ParserUtil
 
 __author__ = 'Roman'
 
@@ -21,10 +21,10 @@ class UtilTest(unittest.TestCase):
           Test that 'isNumber' works with explicit and implicit positive and negative integers
         """
 
-        self.assertTrue(Util.isNumber('10'))
-        self.assertTrue(Util.isNumber('-10'))
-        self.assertTrue(Util.isNumber('+20'))
-        self.assertTrue(Util.isNumber('-60'))
+        self.assertTrue(ParserUtil.isNumber('10'))
+        self.assertTrue(ParserUtil.isNumber('-10'))
+        self.assertTrue(ParserUtil.isNumber('+20'))
+        self.assertTrue(ParserUtil.isNumber('-60'))
 
 
     def testIsNumberWithFloats(self):
@@ -32,7 +32,7 @@ class UtilTest(unittest.TestCase):
           Test that 'isNumber' works with explicit and implicit positive and negative floats
         """
 
-        self.assertTrue(Util.isNumber('1.0'))
-        self.assertTrue(Util.isNumber('-1.0'))
-        self.assertTrue(Util.isNumber('+2.0'))
-        self.assertTrue(Util.isNumber('-6.0'))
+        self.assertTrue(ParserUtil.isNumber('1.0'))
+        self.assertTrue(ParserUtil.isNumber('-1.0'))
+        self.assertTrue(ParserUtil.isNumber('+2.0'))
+        self.assertTrue(ParserUtil.isNumber('-6.0'))

@@ -1,7 +1,7 @@
 from datetime import timedelta
 import os
 from experiments.EvaluationUtility import evaluateBinaryPredictions
-from src.parser import IntrepidRASParser
+from src.parser.intrepidRAS import IntrepidRASParser
 from src.strategy.slidingWindow.EventLevelStrategy import EventLevelStrategy
 
 __author__ = 'jon'
