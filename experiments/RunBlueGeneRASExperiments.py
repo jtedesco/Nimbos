@@ -1,7 +1,7 @@
 from datetime import timedelta
 import os
 from experiments.EvaluationUtility import evaluateBinaryPredictions
-from src.parser.IntrepidRASParser import IntrepidRASParser
+from src.parser import IntrepidRASParser
 from src.strategy.slidingWindow.EventLevelStrategy import EventLevelStrategy
 
 __author__ = 'jon'
@@ -47,13 +47,13 @@ if __name__ == '__main__':
     ]
 
     # Run each experiment, only learning the model if it doesn't already exist
-    for strategy, parser, testFileParser in experiments:
+    for strategy, parser, testFileParser, logfile in experiments:
         modelFilePath = projectRoot + '/model/' + strategy.dataSetName + ' - SVMFatalInLastWindowModel'
 
         # If the model hasn't been learned, learn it, otherwise just load it
         if not os.path.exists(modelFilePath):
 
-            parsedLogData = parser.parse()
+            parsedLogData = parser(logfile)
             testData = strategy.parseData(parsedLogData)
             model = strategy.learn(testData)
 
@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
 
         # Gather test data & use the model to predict labels
-        parsedLogData = testFileParser.parse()
+        parsedLogData = testFileParser(logfile)
         testData = strategy.parseData(parsedLogData)
 
         strategy.predict(testData)
@@ -114,5 +114,5 @@ if __name__ == '__main__':
 
         # Force Python to free the memory for these items, or the program will crash
         del strategy
-        del parser
-        del testFileParser
+        #del parser
+        #del testFileParser
