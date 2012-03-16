@@ -3,6 +3,7 @@ import os
 from experiments.EvaluationUtility import evaluateBinaryPredictions
 from src.parser.intrepidRAS import IntrepidRASParser
 from src.strategy.slidingWindow.EventLevelStrategy import EventLevelStrategy
+from src.strategy.slidingWindow.RandomizedEventLevelStrategy import RandomizedEventLevelStrategy
 
 __author__ = 'jon'
 
@@ -11,17 +12,28 @@ if __name__ == '__main__':
 
     # The experiments to run
     experiments = [
-        EventLevelStrategy('BlueGeneRASPosNeg5SubWindows5Hours'),
-        EventLevelStrategy('BlueGeneRASPosNeut5SubWindows5Hours', negativeLabels=False),
-        EventLevelStrategy('BlueGeneRASPosNeg3SubWindows5Hours', numberOfSubWindows=3),
-        EventLevelStrategy('BlueGeneRASPosNeut3SubWindows5Hours', negativeLabels=False, numberOfSubWindows=3),
-        EventLevelStrategy('BlueGeneRASPosNeg7SubWindows5Hours', numberOfSubWindows=7),
-        EventLevelStrategy('BlueGeneRASPosNeg5SubWindows3Hours', windowDelta=timedelta(hours=3)),
-        EventLevelStrategy('BlueGeneRASPosNeg3SubWindows3Hours', numberOfSubWindows=3, windowDelta=timedelta(hours=3)),
-        EventLevelStrategy('BlueGeneRASPosNeg7SubWindows3Hours', numberOfSubWindows=7, windowDelta=timedelta(hours=3)),
-        EventLevelStrategy('BlueGeneRASPosNeg5SubWindows7Hours', windowDelta=timedelta(hours=7)),
-        EventLevelStrategy('BlueGeneRASPosNeg3SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=3),
-        EventLevelStrategy('BlueGeneRASPosNeg7SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=7),
+        EventLevelStrategy('PosNeg5SubWindows5Hours'),
+        EventLevelStrategy('PosNeut5SubWindows5Hours', negativeLabels=False),
+        EventLevelStrategy('PosNeg3SubWindows5Hours', numberOfSubWindows=3),
+        EventLevelStrategy('PosNeut3SubWindows5Hours', negativeLabels=False, numberOfSubWindows=3),
+        EventLevelStrategy('PosNeg7SubWindows5Hours', numberOfSubWindows=7),
+        EventLevelStrategy('PosNeg5SubWindows3Hours', windowDelta=timedelta(hours=3)),
+        EventLevelStrategy('PosNeg3SubWindows3Hours', numberOfSubWindows=3, windowDelta=timedelta(hours=3)),
+        EventLevelStrategy('PosNeg7SubWindows3Hours', numberOfSubWindows=7, windowDelta=timedelta(hours=3)),
+        EventLevelStrategy('PosNeg5SubWindows7Hours', windowDelta=timedelta(hours=7)),
+        EventLevelStrategy('PosNeg3SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=3),
+        EventLevelStrategy('PosNeg7SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=7),
+        RandomizedEventLevelStrategy('RandomizedPosNeg5SubWindows5Hours'),
+        RandomizedEventLevelStrategy('RandomizedPosNeut5SubWindows5Hours', negativeLabels=False),
+        RandomizedEventLevelStrategy('RandomizedPosNeg3SubWindows5Hours', numberOfSubWindows=3),
+        RandomizedEventLevelStrategy('RandomizedPosNeut3SubWindows5Hours', negativeLabels=False, numberOfSubWindows=3),
+        RandomizedEventLevelStrategy('RandomizedPosNeg7SubWindows5Hours', numberOfSubWindows=7),
+        RandomizedEventLevelStrategy('RandomizedPosNeg5SubWindows3Hours', windowDelta=timedelta(hours=3)),
+        RandomizedEventLevelStrategy('RandomizedPosNeg3SubWindows3Hours', numberOfSubWindows=3, windowDelta=timedelta(hours=3)),
+        RandomizedEventLevelStrategy('RandomizedPosNeg7SubWindows3Hours', numberOfSubWindows=7, windowDelta=timedelta(hours=3)),
+        RandomizedEventLevelStrategy('RandomizedPosNeg5SubWindows7Hours', windowDelta=timedelta(hours=7)),
+        RandomizedEventLevelStrategy('RandomizedPosNeg3SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=3),
+        RandomizedEventLevelStrategy('RandomizedPosNeg7SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=7),
     ]
 
     # The path to the log file to use
