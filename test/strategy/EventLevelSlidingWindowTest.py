@@ -30,7 +30,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
         self.projectRoot = os.environ['PROJECT_ROOT']
 
 
-    def testParseTrainignDataEmpty(self):
+    def testParseTrainingDataEmpty(self):
         """
           Tests that no training data is returned when passed an empty log
         """
@@ -40,7 +40,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
         self.assertEqual([], actualTrainingData)
 
 
-    def testParseTrainignDataNone(self):
+    def testParseTrainingDataNone(self):
         """
           Tests that no training data is returned when passed a null log
         """
@@ -50,7 +50,7 @@ class EventLevelSlidingWindowTest(unittest.TestCase):
         self.assertEqual([], actualTrainingData)
 
 
-    def testParseTrainignDataInvalid(self):
+    def testParseTrainingDataInvalid(self):
         """
           Tests that no training data is returned when passed an invalid log
         """
