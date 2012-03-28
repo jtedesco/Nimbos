@@ -90,9 +90,9 @@ def parse(logFilePath):
                     yield line
 
     #first half of log
-    log = TableParser.parseHelper(part1(), logKeysPart1, skipFirstLines=5)
+    log = TableParser.parseInput(part1(), logKeysPart1, skipFirstLines=5)
     #second half of log
-    log.extend(TableParser.parseHelper(part2(), logKeysPart2))
+    log.extend(TableParser.parseInput(part2(), logKeysPart2))
 
     #clean out bad logs
     regex = re.compile("^\d+$")
