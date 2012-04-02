@@ -1,7 +1,7 @@
 from datetime import timedelta
 import os
 from experiments.EvaluationUtility import evaluateBinaryPredictions
-from src.parser.intrepidRAS import IntrepidRASParser
+from src.parser.BlueGene import BlueGeneParser
 from src.strategy.slidingWindow.EventLevelStrategy import EventLevelStrategy
 from src.strategy.slidingWindow.RandomizedEventLevelStrategy import RandomizedEventLevelStrategy
 
@@ -10,30 +10,35 @@ __author__ = 'jon'
 if __name__ == '__main__':
     projectRoot = os.environ['PROJECT_ROOT']
 
+    categories = set(['-','LINKBLL', 'APPTO', 'KERNSOCK', 'MONILL', 'KERNPOW', 'KERNFLOAT', 'MASNORM', 'MONPOW', 'KERNRTSP', 'APPBUSY', 'APPSEV', 'APPCHILD', 'KERNEXT', 'KERNRTSA', 'APPRES', 'APPREAD', 'LINKPAP', 'APPUNAV', 'KERNREC', 'KERNSERV', 'MONNULL', 'MASABNORM', 'MMCS', 'KERNDTLB', 'KERNSTOR', 'KERNPROG', 'APPOUT', 'KERNTERM', 'KERNTLBE', 'LINKDISC', 'KERNMICRO', 'APPALLOC', 'KERNNOETH', 'APPTORUS', 'KERNMNT', 'KERNPAN', 'LINKIAP', 'KERNBIT', 'KERNMNTF', 'KERNMC', 'KERNCON'])
+
     # The experiments to run
     experiments = [
-        EventLevelStrategy('PosNeg5SubWindows5Hours'),
-        EventLevelStrategy('PosNeg3SubWindows5Hours', numberOfSubWindows=3),
-        EventLevelStrategy('PosNeg7SubWindows5Hours', numberOfSubWindows=7),
-        EventLevelStrategy('PosNeg5SubWindows3Hours', windowDelta=timedelta(hours=3)),
-        EventLevelStrategy('PosNeg3SubWindows3Hours', numberOfSubWindows=3, windowDelta=timedelta(hours=3)),
-        EventLevelStrategy('PosNeg7SubWindows3Hours', numberOfSubWindows=7, windowDelta=timedelta(hours=3)),
-        EventLevelStrategy('PosNeg5SubWindows7Hours', windowDelta=timedelta(hours=7)),
-        EventLevelStrategy('PosNeg3SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=3),
-        EventLevelStrategy('PosNeg7SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=7),
-        RandomizedEventLevelStrategy('RandomizedPosNeg5SubWindows5Hours'),
-        RandomizedEventLevelStrategy('RandomizedPosNeg3SubWindows5Hours', numberOfSubWindows=3),
-        RandomizedEventLevelStrategy('RandomizedPosNeg7SubWindows5Hours', numberOfSubWindows=7),
-        RandomizedEventLevelStrategy('RandomizedPosNeg5SubWindows3Hours', windowDelta=timedelta(hours=3)),
-        RandomizedEventLevelStrategy('RandomizedPosNeg3SubWindows3Hours', numberOfSubWindows=3, windowDelta=timedelta(hours=3)),
-        RandomizedEventLevelStrategy('RandomizedPosNeg7SubWindows3Hours', numberOfSubWindows=7, windowDelta=timedelta(hours=3)),
-        RandomizedEventLevelStrategy('RandomizedPosNeg5SubWindows7Hours', windowDelta=timedelta(hours=7)),
-        RandomizedEventLevelStrategy('RandomizedPosNeg3SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=3),
-        RandomizedEventLevelStrategy('RandomizedPosNeg7SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=7),
+#         EventLevelStrategy('PosNeg5SubWindows5Hours-Predict-KERNRTSP', severities=categories, severityKeyword="CAT", failureValues=set(["KERNRTSP"])),
+#         EventLevelStrategy('PosNeg5SubWindows5Hours-Predict-KERNMNTF', severities=categories, severityKeyword="CAT", failureValues=set(["KERNMNTF"])),
+         RandomizedEventLevelStrategy('RandomizedPosNeg5SubWindows5Hours-Predict-KERNRTSP', severities=categories, severityKeyword="CAT", failureValues=set(["KERNRTSP"])),
+         RandomizedEventLevelStrategy('RandomizedPosNeg5SubWindows5Hours-NewSeverities', severities=["INFO", "FAILURE", "SEVERE", "WARNING", "ERROR", "FATAL"], failureValues=set(["FATAL"])),
+#        EventLevelStrategy('PosNeg3SubWindows5Hours', numberOfSubWindows=3),
+#        EventLevelStrategy('PosNeg7SubWindows5Hours', numberOfSubWindows=7),
+#        EventLevelStrategy('PosNeg5SubWindows3Hours', windowDelta=timedelta(hours=3)),
+#        EventLevelStrategy('PosNeg3SubWindows3Hours', numberOfSubWindows=3, windowDelta=timedelta(hours=3)),
+#        EventLevelStrategy('PosNeg7SubWindows3Hours', numberOfSubWindows=7, windowDelta=timedelta(hours=3)),
+#        EventLevelStrategy('PosNeg5SubWindows7Hours', windowDelta=timedelta(hours=7)),
+#        EventLevelStrategy('PosNeg3SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=3),
+#        EventLevelStrategy('PosNeg7SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=7),
+#        RandomizedEventLevelStrategy('RandomizedPosNeg5SubWindows5Hours'),
+#        RandomizedEventLevelStrategy('RandomizedPosNeg3SubWindows5Hours', numberOfSubWindows=3),
+#        RandomizedEventLevelStrategy('RandomizedPosNeg7SubWindows5Hours', numberOfSubWindows=7),
+#        RandomizedEventLevelStrategy('RandomizedPosNeg5SubWindows3Hours', windowDelta=timedelta(hours=3)),
+#        RandomizedEventLevelStrategy('RandomizedPosNeg3SubWindows3Hours', numberOfSubWindows=3, windowDelta=timedelta(hours=3)),
+#        RandomizedEventLevelStrategy('RandomizedPosNeg7SubWindows3Hours', numberOfSubWindows=7, windowDelta=timedelta(hours=3)),
+#        RandomizedEventLevelStrategy('RandomizedPosNeg5SubWindows7Hours', windowDelta=timedelta(hours=7)),
+#        RandomizedEventLevelStrategy('RandomizedPosNeg3SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=3),
+#        RandomizedEventLevelStrategy('RandomizedPosNeg7SubWindows7Hours', windowDelta=timedelta(hours=7), numberOfSubWindows=7),
     ]
 
     # The path to the log file to use
-    logFilePath = projectRoot + '/log/BlueGeneRAS.log'
+    logFilePath = projectRoot + '/log/bgl.log'
 
     # Run each experiment, only learning the model if it doesn't already exist
     for strategy in experiments:
@@ -42,7 +47,7 @@ if __name__ == '__main__':
         # If the model hasn't been learned, learn it, otherwise just load it
         if not os.path.exists(modelFilePath):
 
-            parsedLogData = IntrepidRASParser.parse(logFilePath)
+            parsedLogData = BlueGeneParser.parse(logFilePath)
             testData = strategy.parseData(parsedLogData)
             model = strategy.learn(testData)
 
@@ -56,7 +61,7 @@ if __name__ == '__main__':
 
 
         # Gather test data & use the model to predict labels
-        parsedLogData = IntrepidRASParser.parse(logFilePath)
+        parsedLogData = BlueGeneParser.parse(logFilePath)
         testData = strategy.parseData(parsedLogData)
 
         strategy.predict(testData)
@@ -76,8 +81,9 @@ if __name__ == '__main__':
                 else:
                     predictions.append(True)
 
+        print correctLabels
         # Remove the predictions output file (cleanup)
-        os.remove(strategy.predictionsOutputFileName)
+        # os.remove(strategy.predictionsOutputFileName)
 
         # Gather basic percentages & counts of performance of model
         evaluations = evaluateBinaryPredictions(correctLabels, predictions)

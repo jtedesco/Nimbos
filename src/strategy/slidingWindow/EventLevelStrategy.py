@@ -23,11 +23,13 @@ class EventLevelStrategy(SlidingWindowStrategy):
     STRATEGY_NAME = 'EventLevelSlidingWindow'
 
     def __init__(self, dataSetName, windowDelta=timedelta(hours=5), numberOfSubWindows=5, severities=None,
-                 severityKeyword=None, negativeLabels=True):
+                 severityKeyword=None, negativeLabels=True, failureKey=None, failureValues=None):
         super(EventLevelStrategy, self).__init__(windowDelta, numberOfSubWindows)
 
-        self.severities = severities or ['INFO', 'WARN', 'ERROR', 'FATAL']
+        self.severities = severities or ["INFO", "WARN", "ERROR", "FATAL"]
         self.severityKey = severityKeyword or 'SEVERITY'
+        self.failureKey = failureKey or self.severityKey
+        self.failureValues = failureValues or set(["FATAL", "FAILURE"])
 
         self.trainingFileName = dataSetName + ' - ' + EventLevelStrategy.STRATEGY_NAME + 'Training'
         self.modelFileName = dataSetName + ' - ' + EventLevelStrategy.STRATEGY_NAME + 'Model'
@@ -67,12 +69,9 @@ class EventLevelStrategy(SlidingWindowStrategy):
                     subWindow = window[subWindowIndex]
 
                     # Counts the number of events of each severity
-                    eventCounts = {
-                        self.severities[0]: 0,
-                        self.severities[1]: 0,
-                        self.severities[2]: 0,
-                        self.severities[3]: 0
-                    }
+                    eventCounts = {}
+                    for key in self.severities:
+                        eventCounts[key] = 0;
 
                     for logEvent in subWindow:
                         # Fail to parse the log data if it's invalid (in that it doesn't contain the expected 'SEVERITY' field)
@@ -84,14 +83,15 @@ class EventLevelStrategy(SlidingWindowStrategy):
                         eventCounts[logEvent[self.severityKey]] += 1
 
                     # Append the counts for this sub-window
-                    subWindowData.append(
-                        (eventCounts[self.severities[0]], eventCounts[self.severities[1]],
-                         eventCounts[self.severities[2]], eventCounts[self.severities[3]]))
+                    supportVector = []
+                    for key in self.severities:
+                        supportVector.append(eventCounts[key])
+                    subWindowData.append(tuple(supportVector))
 
                 # Look for 'FATAL' events in the last window
                 foundFatalEvent = False
                 for logEvent in window[-1]:
-                    if logEvent[self.severityKey] == self.severities[3]:
+                    if logEvent[self.failureKey] in self.failureValues:
                         foundFatalEvent = True
                         break
 

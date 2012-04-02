@@ -1,0 +1,15 @@
+Percentages:
+------------
+	totalAccuracy:  51.52%
+	failureAccuracy:  6.06%
+	nonFailureAccuracy:  96.97%
+	failurePercentage:  50.00%
+
+Raw Counts:
+-----------
+	totalFailures:  198
+	predictedFailures:  12
+	totalEvents:  396
+	misPredictedNonFailures:  6
+	misPredictedFailures:  186
+	predictedNonFailures:  192
