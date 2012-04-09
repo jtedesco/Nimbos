@@ -1,3 +1,4 @@
+from datetime import timedelta
 from json import load
 import os
 import unittest
@@ -12,21 +13,105 @@ class IBMPaperStrategyTest(unittest.TestCase):
     """
 
     def setUp(self):
-        self.eventLevelSlidingWindowStrategy = IBMPaperStrategy('TestData')
+        self.eventLevelSlidingWindowStrategy = IBMPaperStrategy('TestData', subWindowIntervalDelta=timedelta(hours=5))
         self.eventLevelSlidingWindowStrategy6 = IBMPaperStrategy('TestData', numberOfSubWindows=6)
 
         # Parsed training data for five sub-window example
         self.fiveSubWindowTrainingData = [
-            ((2, 0, 1, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), 3, 3, 2, 0, True),
-            ((1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), 2, 3, 1, 1, False),
-            ((0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (0, 0, 0, 0), 1, 3, 0, 1, False)
+            (
+                # Event level counts for sub-windows
+                (2, 0, 1, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0),
+
+                # Total event level counts
+                3, 3, 2, 0,
+
+                # Event level counts for sub-window intervals (each sub-window is 1 hour interval
+                (
+                    (2, 0, 1, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0)
+                ),
+                True
+            ),
+            (
+                # Event level counts for sub-windows
+                (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1),
+
+                # Total event level counts
+                2, 3, 1, 1,
+
+                # Event level counts for sub-window intervals (each sub-window is 1 hour interval
+                (
+                    (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1)
+                ),
+                False
+            ),
+            (
+                # Event level counts for sub-windows
+                (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (0, 0, 0, 0),
+
+                # Total event level counts
+                1, 3, 0, 1,
+
+                # Event level counts for sub-window intervals (each sub-window is 1 hour interval
+                (
+                    (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (0, 0, 0, 0)
+                ),
+                False
+            )
         ]
 
         # Parsed training data for six sub-window example
         self.sixSubWindowTrainingData = [
-            ((2, 0, 1, 0), (0, 0, 0, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), 3, 3, 2, 0, True),
-            ((0, 0, 0, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), 2, 3, 1, 1, False),
-            ((1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (0, 0, 0, 0), 2, 3, 1, 1, False)
+            (
+                # Event level counts for sub-windows
+                (2, 0, 1, 0), (0, 0, 0, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0),
+
+                # Total event level counts
+                3, 3, 2, 0,
+
+                # Event level counts for sub-window intervals (each sub-window is 1 hour interval
+                (
+                    (1,0,0,0), (0,0,1,0), (1,0,0,0), (0,0,0,0), # Hours 1-4
+                    (0,0,0,0), (0,0,0,0), (0,0,0,0), (0,0,0,0), # Hours 5-8
+                    (0,0,0,0), (0,0,0,0), (0,0,1,0), (1,0,0,0), # Hours 9-12
+                    (0,3,0,0), (0,0,0,0), (0,0,0,0), (0,0,0,0), # Hours 13-16
+                    (0,0,0,0), (0,0,0,0), (0,0,0,0), (0,0,0,0), # Hours 17-20
+                ),
+                True
+            ),
+            (
+                # Event level counts for sub-windows
+                (0, 0, 0, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1),
+
+                # Total event level counts
+                2, 3, 1, 1,
+
+                # Event level counts for sub-window intervals (each sub-window is 1 hour interval
+                (
+                    (0,0,0,0), (0,0,0,0), (0,0,0,0), (0,0,0,0), # Hours 5-8
+                    (0,0,0,0), (0,0,0,0), (0,0,1,0), (1,0,0,0), # Hours 9-12
+                    (0,3,0,0), (0,0,0,0), (0,0,0,0), (0,0,0,0), # Hours 13-16
+                    (0,0,0,0), (0,0,0,0), (0,0,0,0), (0,0,0,0), # Hours 17-20
+                    (0,0,0,0), (0,0,0,1), (0,0,0,0), (1,0,0,0), # Hours 21-0 (next day)
+                ),
+                False
+            ),
+            (
+                # Event level counts for sub-windows
+                (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (0, 0, 0, 0),
+
+                # Total event level counts
+                2, 3, 1, 1,
+
+                # Event level counts for sub-window intervals (each sub-window is 1 hour interval
+                (
+                    (0,0,0,0), (0,0,0,0), (0,0,1,0), (1,0,0,0), # Hours 9-12
+                    (0,3,0,0), (0,0,0,0), (0,0,0,0), (0,0,0,0), # Hours 13-16
+                    (0,0,0,0), (0,0,0,0), (0,0,0,0), (0,0,0,0), # Hours 17-20
+                    (0,0,0,0), (0,0,0,1), (0,0,0,0), (1,0,0,0), # Hours 21-0 (next day)
+                    (0,0,0,0), (0,0,0,0), (0,0,0,0), (0,0,0,0), # Hours 1-4 (next day)
+                ),
+                False
+            )
         ]
         self.projectRoot = os.environ['PROJECT_ROOT']
 
