@@ -235,20 +235,9 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
             # Build the text for this line of the training file
             featuresText = []
             featureLabel = 1
-            for featureIndex in xrange(0, len(features)):
-                feature = features[featureIndex]
-                if type(feature) == type(tuple()):
-                    for subFeature in feature:
-                        if type(subFeature) == type(tuple()):
-                            for subSubFeature in subFeature:
-                                featuresText.append('%d:%1.2f' % (featureLabel, float(subSubFeature)))
-                                featureLabel += 1
-                        else:
-                            featuresText.append('%d:%1.2f' % (featureLabel, float(subFeature)))
-                            featureLabel += 1
-                else:
-                    featuresText.append('%d:%1.2f' % (featureLabel, float(feature)))
-                    featureLabel += 1
+
+            # Recursively format the features
+            self.formatFeatures(featureLabel, features, featuresText)
 
             trainingFileLine += ' '.join(featuresText)
             trainingFileLines.append(trainingFileLine)
@@ -257,3 +246,24 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
         trainingFileContent = '\n'.join(trainingFileLines)
 
         return trainingFileContent
+
+
+    def formatFeatures(self, featureLabel, features, featuresText):
+        """
+          Helper function to recursively format the features into the training file text
+
+            @param  featureLabel    The feature label number
+            @param  features        The features to format
+            @param  featuresText    The text of the feature file so far
+
+            @return The next feature label, following those processed in this call
+        """
+
+        for featureIndex in xrange(0, len(features)):
+            feature = features[featureIndex]
+            if type(feature) == type(tuple()) or type(feature) == type(list()):
+                featureLabel = self.formatFeatures(featureLabel, feature, featuresText)
+            else:
+                featuresText.append('%d:%1.2f' % (featureLabel, float(feature)))
+                featureLabel += 1
+        return featureLabel
