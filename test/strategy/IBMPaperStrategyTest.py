@@ -99,10 +99,10 @@ class IBMPaperStrategyTest(unittest.TestCase):
                 ),
 
                 # Event level count means
-                (),
+                (0.15, 0.15, 0.10, 0.00),
 
                 # Event level count standard deviations
-                (),
+                (0.36, 0.65, 0.30, 0.00),
 
                 True
             ),
@@ -123,10 +123,10 @@ class IBMPaperStrategyTest(unittest.TestCase):
                 ),
 
                 # Event level count means
-                (),
+                (0.10, 0.15, 0.05, 0.05),
 
                 # Event level count standard deviations
-                (),
+                (0.30, 0.65, 0.22, 0.22),
 
                 False
             ),
@@ -147,10 +147,10 @@ class IBMPaperStrategyTest(unittest.TestCase):
                 ),
 
                 # Event level count means
-                (),
+                (0.10, 0.15, 0.05, 0.05),
 
                 # Event level count standard deviations
-                (),
+                (0.30, 0.65, 0.22, 0.22),
 
                 False
             )
