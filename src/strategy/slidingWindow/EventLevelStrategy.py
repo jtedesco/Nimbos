@@ -29,7 +29,7 @@ class EventLevelStrategy(SlidingWindowStrategy):
         self.severities = severities or ["INFO", "WARN", "ERROR", "FATAL"]
         self.severityKey = severityKeyword or 'SEVERITY'
         self.failureKey = failureKey or self.severityKey
-        self.failureValues = failureValues or set(["FATAL", "FAILURE"])
+        self.failureValues = failureValues or {"FATAL", "FAILURE"}
 
         self.trainingFileName = dataSetName + ' - ' + EventLevelStrategy.STRATEGY_NAME + 'Training'
         self.modelFileName = dataSetName + ' - ' + EventLevelStrategy.STRATEGY_NAME + 'Model'
@@ -71,7 +71,7 @@ class EventLevelStrategy(SlidingWindowStrategy):
                     # Counts the number of events of each severity
                     eventCounts = {}
                     for key in self.severities:
-                        eventCounts[key] = 0;
+                        eventCounts[key] = 0
 
                     for logEvent in subWindow:
                         # Fail to parse the log data if it's invalid (in that it doesn't contain the expected 'SEVERITY' field)
