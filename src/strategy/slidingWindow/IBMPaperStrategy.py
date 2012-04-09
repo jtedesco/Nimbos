@@ -1,6 +1,7 @@
 from datetime import timedelta
 from src.strategy.SlidingWindowClassificationStrategy import SlidingWindowClassificationStrategy
 from src.strategy.StrategyError import StrategyError
+from numpy import array
 
 __author__ = 'jon'
 
@@ -18,9 +19,19 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
 
     STRATEGY_NAME = 'IBMPaperStrategy'
 
-    def __init__(self, dataSetName, windowDelta=timedelta(hours=5), numberOfSubWindows=5, severities=None,
-                 severityKeyword=None, negativeLabels=True, failureKey=None, failureValues=None):
-        super(IBMPaperStrategy, self).__init__(windowDelta, numberOfSubWindows)
+    def __init__(self, dataSetName, windowDelta=timedelta(hours=5), numberOfSubWindows=5, subWindowIntervalDelta=timedelta(hours=1),
+                 severities=None, severityKeyword=None, negativeLabels=True, failureKey=None, failureValues=None):
+        """
+          Creates a strategy object:
+            @param  dataSetName                 The name of the data set
+            @param  windowDelta                 The time delta used to divide a window into subwindows
+            @param  numberOfSubWindows          The number of sub-windows in a given window
+            @param  severities                  The list of event log severities
+            @param  severityKeyword             The dictionary key to get an even severity
+            @param  negativeLabels              Whether or not to include negative labels
+        """
+
+        super(IBMPaperStrategy, self).__init__(windowDelta, numberOfSubWindows, )
 
         self.severities = severities or ["INFO", "WARN", "ERROR", "FATAL"]
         self.severityKey = severityKeyword or 'SEVERITY'
@@ -37,12 +48,63 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
         self.dataSetName = dataSetName
 
 
-    def parseWindowedLogData(self, windowedLogData):
+    def parseWindowEventLevelCounts(self, window, excludeLastEntry = True):
+        """
+          Parses counts for event levels from the given window
+
+            @param  window  The window to parse
+        """
+
+
+        # Maintains total severity counts for entire observation period
+        observationWindowEventCounts = {}
+        for key in self.severities:
+            observationWindowEventCounts[key] = 0
+
+        # Iterate through each sub-window, skipping the last window (since the last is used for classification)
+        subWindowData = []
+        numberToSkip = 1 if excludeLastEntry else 0
+        for subWindowIndex in xrange(0, len(window) - numberToSkip):
+            subWindow = window[subWindowIndex]
+
+            # Counts the number of events of each severity
+            eventCounts = {}
+            for key in self.severities:
+                eventCounts[key] = 0
+
+            for logEvent in subWindow:
+
+                # Fail to parse the log data if it's invalid (in that it doesn't contain the expected 'SEVERITY' field)
+                if self.severityKey not in logEvent:
+                    raise  StrategyError(
+                        'Error parsing windowed log data, could not find %s field!' % self.severityKey)
+
+                # Tally an event of this severity for this subwindow & the total count
+                eventCounts[logEvent[self.severityKey]] += 1
+                observationWindowEventCounts[logEvent[self.severityKey]] += 1
+
+            # Append the counts for this sub-window
+            supportVector = []
+            for key in self.severities:
+                supportVector.append(eventCounts[key])
+            subWindowData.append(tuple(supportVector))
+
+        return observationWindowEventCounts, subWindowData
+
+
+    def parseWindowedLogData(self, windowedLogData, intervalWindowedLogData):
         """
           Helper function to parse the windowed log data (log data properly divided into sliding windows for learning)
-            into training examples.
+            into training examples. The format of the parsed data is as follows (in this order):
 
-            @param  windowedLogData The log data divided into sliding window format
+                - 1 tuple for each subwindow, containing the number events of each severity
+                - 1 entry containing the total count of events for each event severity
+                - 1 tuple for each subwindow interval (for event distribution), containing the number events of each severity
+                - 1 entry containing the time since the last fatal event
+                - 1 entry containing the number of occurences for each entry data phrase, corresponding to the number of occurrences in this period
+
+            @param  windowedLogData         The log data divided into sliding window format by window length
+            @param  intervalWindowedLogData The log data divided into sliding window format by sliding sub-window interval length
         """
 
         # Handle case of invalid windowed log data
@@ -53,42 +115,29 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
             trainingData = []
 
             # Iterate through each window, each of which will consist of a training example
-            for window in windowedLogData:
+            for window, windowInterval in zip(windowedLogData, intervalWindowedLogData):
+
+                # Check that the windows evenly divide into window intervals
+                numberOfIntervalsPerWindow = float(len(windowInterval)) / len(window)
+                if numberOfIntervalsPerWindow != int(numberOfIntervalsPerWindow):
+                    raise StrategyError()
+                else:
+                    windowInterval = windowInterval[:((-1) * int(numberOfIntervalsPerWindow))] # Skip the last window (since it is not in the observation period)
+
+                # Remove all entries from 'windowInterval' that appear in the last sub-window (outside of the observation period)
+                for event in window[-1]:
+                    for interval in windowInterval:
+                        if event in interval:
+                            interval.remove(event)
+
+
                 # Throw an exception if there is 1 or 0 sub-windows in a window --  the strategy doesn't make sense
                 if len(window) <= 1:
                     raise StrategyError(
                         'Error parsing windowed log data, found window with %d sub-windows!' % len(window))
 
-                # Maintains total severity counts for entire observation period
-                observationWindowEventCounts = {}
-                for key in self.severities:
-                    observationWindowEventCounts[key] = 0
-
-                # Iterate through each sub-window, skipping the last window (since the last is used for classification)
-                subWindowData = []
-                for subWindowIndex in xrange(0, len(window) - 1):
-                    subWindow = window[subWindowIndex]
-
-                    # Counts the number of events of each severity
-                    eventCounts = {}
-                    for key in self.severities:
-                        eventCounts[key] = 0
-
-                    for logEvent in subWindow:
-                        # Fail to parse the log data if it's invalid (in that it doesn't contain the expected 'SEVERITY' field)
-                        if self.severityKey not in logEvent:
-                            raise  StrategyError(
-                                'Error parsing windowed log data, could not find %s field!' % self.severityKey)
-
-                        # Tally an event of this severity for this subwindow & the total count
-                        eventCounts[logEvent[self.severityKey]] += 1
-                        observationWindowEventCounts[logEvent[self.severityKey]] += 1
-
-                    # Append the counts for this sub-window
-                    supportVector = []
-                    for key in self.severities:
-                        supportVector.append(eventCounts[key])
-                    subWindowData.append(tuple(supportVector))
+                # Parse the actual windowed log data
+                observationWindowEventCounts, subWindowData = self.parseWindowEventLevelCounts(window)
 
                 # Look for 'FATAL' events in the last window
                 foundFatalEvent = False
@@ -97,13 +146,38 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
                         foundFatalEvent = True
                         break
 
+                # Parse the event level counts from the sub-window intervals
+                observationWindowEventCounts2, subWindowIntervalData = self.parseWindowEventLevelCounts(windowInterval, False)
+
+                # Check that the total event level counts retrieved are consistent
+                if observationWindowEventCounts != observationWindowEventCounts2:
+                    raise StrategyError('Error parsing windowed data, parsing same data twice yielded different total event counts!')
+
                 # Create tuple of event level counts for entire observation period
                 observationPeriodCounts = []
                 for key in self.severities:
                     observationPeriodCounts.append(observationWindowEventCounts[key])
 
+                # Tally the number of events of each level in separate numpy arrays
+                eventLevelWindowIntervalCounts = []
+                for severityIndex in xrange(0, len(self.severities)):
+                    thisIntervalCounts = array(list(entry[severityIndex] for entry in subWindowIntervalData))
+                    eventLevelWindowIntervalCounts.append(thisIntervalCounts)
+
+                # Calculate the mean and standard deviation of counts of each event severity level
+                means = []
+                standardDeviations = []
+                for severityCountsArray in eventLevelWindowIntervalCounts:
+                    means.append(round(severityCountsArray.mean(),2))
+                    standardDeviations.append(round(severityCountsArray.std(),2))
+
                 # Add the training example
-                trainingData.append(tuple(subWindowData) + tuple(observationPeriodCounts) + (foundFatalEvent,))
+                trainingData.append(tuple(subWindowData) + tuple(observationPeriodCounts) +(tuple(subWindowIntervalData),)
+                        + (tuple(means),) + (tuple(standardDeviations),) + (foundFatalEvent,))
+
+            # Throw an exception if no training data could be parsed
+            if len(trainingData) is 0:
+                raise StrategyError('Error parsing windowed log data!')
 
             return trainingData
 

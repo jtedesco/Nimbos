@@ -14,7 +14,7 @@ class IBMPaperStrategyTest(unittest.TestCase):
 
     def setUp(self):
         self.eventLevelSlidingWindowStrategy = IBMPaperStrategy('TestData', subWindowIntervalDelta=timedelta(hours=5))
-        self.eventLevelSlidingWindowStrategy6 = IBMPaperStrategy('TestData', numberOfSubWindows=6)
+        self.eventLevelSlidingWindowStrategy6 = IBMPaperStrategy('TestData', numberOfSubWindows=6, subWindowIntervalDelta=timedelta(hours=1))
 
         # Parsed training data for five sub-window example
         self.fiveSubWindowTrainingData = [
@@ -163,7 +163,7 @@ class IBMPaperStrategyTest(unittest.TestCase):
           Tests that no training data is returned when passed an empty log
         """
 
-        actualTrainingData = self.eventLevelSlidingWindowStrategy.parseWindowedLogData([])
+        actualTrainingData = self.eventLevelSlidingWindowStrategy.parseWindowedLogData([], [])
 
         self.assertEqual([], actualTrainingData)
 
@@ -173,7 +173,7 @@ class IBMPaperStrategyTest(unittest.TestCase):
           Tests that no training data is returned when passed a null log
         """
 
-        actualTrainingData = self.eventLevelSlidingWindowStrategy.parseWindowedLogData(None)
+        actualTrainingData = self.eventLevelSlidingWindowStrategy.parseWindowedLogData(None, None)
 
         self.assertEqual([], actualTrainingData)
 
@@ -184,22 +184,22 @@ class IBMPaperStrategyTest(unittest.TestCase):
         """
 
         try:
-            self.eventLevelSlidingWindowStrategy.parseWindowedLogData([[]])
+            self.eventLevelSlidingWindowStrategy.parseWindowedLogData([[]], [])
             self.fail('Trying to parse an invalid log should have thrown an exception!')
         except StrategyError, error:
-            self.assertEqual('Error parsing windowed log data, found window with 0 sub-windows!', error.message)
+            self.assertEqual('Error parsing windowed log data!', error.message)
 
         try:
-            self.eventLevelSlidingWindowStrategy.parseWindowedLogData([[[{}]]])
+            self.eventLevelSlidingWindowStrategy.parseWindowedLogData([[[{}]]], [])
             self.fail('Trying to parse an invalid log should have thrown an exception!')
         except StrategyError, error:
-            self.assertEqual('Error parsing windowed log data, found window with 1 sub-windows!', error.message)
+            self.assertEqual('Error parsing windowed log data!', error.message)
 
         try:
-            self.eventLevelSlidingWindowStrategy.parseWindowedLogData([[[{}, {}], [], []]])
+            self.eventLevelSlidingWindowStrategy.parseWindowedLogData([[[{}, {}], [], []]], [])
             self.fail('Trying to parse an invalid log should have thrown an exception!')
         except StrategyError, error:
-            self.assertEqual('Error parsing windowed log data, could not find SEVERITY field!', error.message)
+            self.assertEqual('Error parsing windowed log data!', error.message)
 
 
     def testParseTrainingDataFiveSubWindows(self):
@@ -209,11 +209,12 @@ class IBMPaperStrategyTest(unittest.TestCase):
         """
 
         # Setup
-        mockWindowedLogData = load(open(self.projectRoot + '/test/strategy/eventLevelSlidingWindow/parsedLog/FiveSubWindows.json'))
+        mockWindowedLogData = load(open(self.projectRoot + '/test/strategy/ibmPaperStrategy/parsedLog/FiveSubWindows.json'))
+        mockIntervalWindowedLogData = load(open(self.projectRoot + '/test/strategy/ibmPaperStrategy/parsedLog/FiveSubIntervalWindows.json'))
         expectedTrainingData = self.fiveSubWindowTrainingData
 
         # Test
-        actualTrainingData = self.eventLevelSlidingWindowStrategy.parseWindowedLogData(mockWindowedLogData)
+        actualTrainingData = self.eventLevelSlidingWindowStrategy.parseWindowedLogData(mockWindowedLogData, mockIntervalWindowedLogData)
 
         # Verify
         self.assertEqual(expectedTrainingData, actualTrainingData)
@@ -226,11 +227,12 @@ class IBMPaperStrategyTest(unittest.TestCase):
         """
 
         # Setup
-        mockWindowedLogData = load(open(self.projectRoot + '/test/strategy/eventLevelSlidingWindow/parsedLog/SixSubWindows.json'))
+        mockWindowedLogData = load(open(self.projectRoot + '/test/strategy/ibmPaperStrategy/parsedLog/SixSubWindows.json'))
+        mockIntervalWindowedLogData = load(open(self.projectRoot + '/test/strategy/ibmPaperStrategy/parsedLog/SixSubIntervalWindows.json'))
         expectedTrainingData = self.sixSubWindowTrainingData
 
         # Test
-        actualTrainingData = self.eventLevelSlidingWindowStrategy.parseWindowedLogData(mockWindowedLogData)
+        actualTrainingData = self.eventLevelSlidingWindowStrategy.parseWindowedLogData(mockWindowedLogData, mockIntervalWindowedLogData)
 
         # Verify
         self.assertEqual(expectedTrainingData, actualTrainingData)
