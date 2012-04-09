@@ -31,7 +31,7 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
             @param  negativeLabels              Whether or not to include negative labels
         """
 
-        super(IBMPaperStrategy, self).__init__(windowDelta, numberOfSubWindows, )
+        super(IBMPaperStrategy, self).__init__(windowDelta, numberOfSubWindows, subWindowIntervalDelta)
 
         self.severities = severities or ["INFO", "WARN", "ERROR", "FATAL"]
         self.severityKey = severityKeyword or 'SEVERITY'
@@ -52,7 +52,9 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
         """
           Parses counts for event levels from the given window
 
-            @param  window  The window to parse
+            @param  window              The window to parse
+            @param  excludeLastEntry    Whether or not to include the information from the last window entry
+                                        (to deal with data outside the observation period)
         """
 
 

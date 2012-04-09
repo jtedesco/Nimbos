@@ -1,5 +1,6 @@
 from datetime import timedelta, datetime
 from src.PredictionStrategy import PredictionStrategy
+from src.strategy.StrategyError import StrategyError
 
 __author__ = 'jon'
 
@@ -26,6 +27,8 @@ class SlidingWindowStrategy(PredictionStrategy):
         self.subWindowIntervalDelta = subWindowIntervalDelta
         self.numberOfSubWindows = numberOfSubWindows
 
+        if windowDelta.seconds % subWindowIntervalDelta.seconds is not 0:
+            raise StrategyError('Error parsing windowed log data, cannot divide sub-windows into smaller intervals evenly!')
 
     def parseData(self, data):
         """
@@ -36,6 +39,7 @@ class SlidingWindowStrategy(PredictionStrategy):
         if data is None or len(data) <= 0:
             raise AssertionError('Training data for SlidingWindow must be non-empty!')
         else:
+
             # Parse the training data into windows & intervals
             windowedLogData = self.splitDataToIntervals(data, self.windowDelta, self.numberOfSubWindows)
             intervalWindowedLogData = self.splitDataToIntervals(data, self.subWindowIntervalDelta, self.numberOfSubWindows)

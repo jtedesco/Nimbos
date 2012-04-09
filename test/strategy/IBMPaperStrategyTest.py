@@ -178,6 +178,18 @@ class IBMPaperStrategyTest(unittest.TestCase):
         self.assertEqual([], actualTrainingData)
 
 
+    def testParseTrainingDataUnevenSplit(self):
+        """
+          Tests that the training data fails to parse if the sub-window intervals do not divide evenly into the sub-windows
+        """
+
+        try:
+            invalidStrategy = IBMPaperStrategy('TestData', subWindowIntervalDelta=timedelta(hours=4))
+            self.fail('Trying to construct an invalid strategy should have thrown an exception!')
+        except StrategyError, error:
+            self.assertEqual('Error parsing windowed log data, cannot divide sub-windows into smaller intervals evenly!', error.message)
+
+
     def testParseTrainingDataInvalid(self):
         """
           Tests that no training data is returned when passed an invalid log
