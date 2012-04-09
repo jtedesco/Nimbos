@@ -14,8 +14,10 @@ class SlidingWindowStrategy(PredictionStrategy):
     def __init__(self, windowDelta=timedelta(hours=5), numberOfSubWindows=5, subWindowIntervalDelta=timedelta(hours=1)):
         """
           Constructs the properties of the sliding window strategy
-            @param  windowDelta         The time delta for each sub-window
-            @param  numberOfSubWindows  The number of sub-windows to use in a sliding window
+            @param  windowDelta             The time delta for each sub-window
+            @param  numberOfSubWindows      The number of sub-windows to use in a sliding window
+            @param  subWindowIntervalDelta  The time delta for sub-window intervals (must evenly divide 'windowDelta')
+
         """
 
         super(SlidingWindowStrategy, self).__init__()
