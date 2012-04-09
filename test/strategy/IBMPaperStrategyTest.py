@@ -1,3 +1,4 @@
+from IN import INT_MAX
 from datetime import timedelta
 from json import load
 import os
@@ -36,6 +37,9 @@ class IBMPaperStrategyTest(unittest.TestCase):
                 # Event level count standard deviations
                 (0.83, 1.30, 0.50, 0.00),
 
+                # Number of intervals since last fatal event
+                INT_MAX,
+
                 True
             ),
             (
@@ -56,6 +60,9 @@ class IBMPaperStrategyTest(unittest.TestCase):
                 # Event level count standard deviations
                 (0.50, 1.30, 0.43, 0.43),
 
+                # Number of intervals since last fatal event
+                0,
+
                 False
             ),
             (
@@ -75,6 +82,9 @@ class IBMPaperStrategyTest(unittest.TestCase):
 
                 # Event level count standard deviations
                 (0.43, 1.30, 0.00, 0.43),
+
+                # Number of intervals since last fatal event
+                1,
 
                 False
             )
@@ -104,6 +114,9 @@ class IBMPaperStrategyTest(unittest.TestCase):
                 # Event level count standard deviations
                 (0.36, 0.65, 0.30, 0.00),
 
+                # Number of intervals since last fatal event
+                INT_MAX,
+
                 True
             ),
             (
@@ -128,6 +141,9 @@ class IBMPaperStrategyTest(unittest.TestCase):
                 # Event level count standard deviations
                 (0.30, 0.65, 0.22, 0.22),
 
+                # Number of intervals since last fatal event
+                0,
+
                 False
             ),
             (
@@ -151,6 +167,9 @@ class IBMPaperStrategyTest(unittest.TestCase):
 
                 # Event level count standard deviations
                 (0.30, 0.65, 0.22, 0.22),
+
+                # Number of intervals since last fatal event
+                1,
 
                 False
             )
