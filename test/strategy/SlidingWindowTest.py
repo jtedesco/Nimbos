@@ -58,7 +58,9 @@ class SlidingWindowTest(unittest.TestCase):
         expectedWindowedData = load(open(self.projectRoot + '/test/strategy/slidingWindow/json/ExpectedWindowedData.json'))
 
         # Test
-        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(self.mockLogData[:-1])
+        interval = self.slidingWindowStrategy.windowDelta
+        numberOfIntervals = self.slidingWindowStrategy.numberOfSubWindows
+        actualWindowedData = self.slidingWindowStrategy.splitDataToIntervals(self.mockLogData[:-1], interval, numberOfIntervals)
 
         # Verify
         self.assertEqual(expectedWindowedData, actualWindowedData)
@@ -81,7 +83,9 @@ class SlidingWindowTest(unittest.TestCase):
         expectedWindowedData = load(open(self.projectRoot + '/test/strategy/slidingWindow/json/ExpectedExtendedLogWindows.json'))
 
         # Test
-        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(self.mockLogData)
+        interval = self.slidingWindowStrategy.windowDelta
+        numberOfIntervals = self.slidingWindowStrategy.numberOfSubWindows
+        actualWindowedData = self.slidingWindowStrategy.splitDataToIntervals(self.mockLogData, interval, numberOfIntervals)
 
         # Verify
         self.assertEqual(expectedWindowedData, actualWindowedData)
@@ -108,7 +112,9 @@ class SlidingWindowTest(unittest.TestCase):
         expectedWindowedData = load(open(self.projectRoot + '/test/strategy/slidingWindow/json/ExpectedExtendedModifiedIntervalLogWindows.json'))
 
         # Test
-        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(self.mockLogData)
+        interval = self.slidingWindowStrategy.windowDelta
+        numberOfIntervals = self.slidingWindowStrategy.numberOfSubWindows
+        actualWindowedData = self.slidingWindowStrategy.splitDataToIntervals(self.mockLogData, interval, numberOfIntervals)
 
         # Verify
         self.assertEqual(expectedWindowedData, actualWindowedData)
@@ -136,7 +142,9 @@ class SlidingWindowTest(unittest.TestCase):
         expectedWindowedData = load(open(self.projectRoot + '/test/strategy/slidingWindow/json/ExpectedExtendedModifiedIntervalAndSubWindowsLogWindows.json'))
 
         # Test
-        actualWindowedData = self.slidingWindowStrategy.parseLogWindows(self.mockLogData)
+        interval = self.slidingWindowStrategy.windowDelta
+        numberOfIntervals = self.slidingWindowStrategy.numberOfSubWindows
+        actualWindowedData = self.slidingWindowStrategy.splitDataToIntervals(self.mockLogData, interval, numberOfIntervals)
 
         # Verify
         self.assertEqual(expectedWindowedData, actualWindowedData)

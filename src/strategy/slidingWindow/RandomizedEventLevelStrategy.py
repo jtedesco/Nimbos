@@ -9,7 +9,7 @@ class RandomizedEventLevelStrategy(EventLevelStrategy):
         training examples so that there an equal number of positive and negative training examples.
     """
 
-    def parseWindowedLogData(self, windowedLogData):
+    def parseWindowedLogData(self, windowedLogData, intervalWindowedLogData):
         """
           Parse the windowed log data, removing random entries so that the counts of positive & negative examples match
         """

@@ -10,7 +10,7 @@ class SlidingWindowStrategy(PredictionStrategy):
         this will predict whether or not there will be a fatal error.
     """
 
-    def __init__(self, windowDelta=timedelta(hours=5), numberOfSubWindows=5):
+    def __init__(self, windowDelta=timedelta(hours=5), numberOfSubWindows=5, subWindowIntervalDelta=timedelta(hours=1)):
         """
           Constructs the properties of the sliding window strategy
             @param  windowDelta         The time delta for each sub-window
@@ -23,6 +23,7 @@ class SlidingWindowStrategy(PredictionStrategy):
         self.TIMESTAMP_FORMAT = "%Y-%m-%d-%H.%M.%S.%f"
 
         self.windowDelta = windowDelta
+        self.subWindowIntervalDelta = subWindowIntervalDelta
         self.numberOfSubWindows = numberOfSubWindows
 
 
@@ -35,15 +36,16 @@ class SlidingWindowStrategy(PredictionStrategy):
         if data is None or len(data) <= 0:
             raise AssertionError('Training data for SlidingWindow must be non-empty!')
         else:
-            # Parse the training data into windows
-            windowedLogData = self.parseLogWindows(data)
+            # Parse the training data into windows & intervals
+            windowedLogData = self.splitDataToIntervals(data, self.windowDelta, self.numberOfSubWindows)
+            intervalWindowedLogData = self.splitDataToIntervals(data, self.subWindowIntervalDelta, self.numberOfSubWindows)
 
             # The training data, where each entry is a tuple of tuples
             #   organized by windows, then sub-windows, then data
-            return self.parseWindowedLogData(windowedLogData)
+            return self.parseWindowedLogData(windowedLogData, intervalWindowedLogData)
 
 
-    def parseWindowedLogData(self, windowedLogData):
+    def parseWindowedLogData(self, windowedLogData, intervalWindowedLogData):
         """
           Helper function to parse the windowed log data (log data properly divided into sliding windows for learning)
             into training examples.
@@ -53,14 +55,13 @@ class SlidingWindowStrategy(PredictionStrategy):
         raise NotImplementedError("Cannot parse windowed log data in abstract class 'SlidingWindow'")
 
 
-    def parseLogWindows(self, data):
+    def splitDataToIntervals(self, data, interval, numberOfIntervals):
         """
-          Helper function to take the log data and parse it into windows of windows
-            @param  data    The original training data
+          Helper function to split log data into intervals
         """
 
         # The end timestamp of the the next sub-window, initialized to first timestamp plus time delta
-        endSubWindowTimestamp = datetime.strptime(data[0]['EVENT_TIME'], self.TIMESTAMP_FORMAT) + self.windowDelta
+        endSubWindowTimestamp = datetime.strptime(data[0]['EVENT_TIME'], self.TIMESTAMP_FORMAT) + interval
 
         # The list of list of lists of lists (log entries broken into windows and sub windows)
         windowedLogData = []
@@ -73,7 +74,7 @@ class SlidingWindowStrategy(PredictionStrategy):
 
             # Iterate across all sub-windows (or gracefully handle when we run out of data)
             innerDataIndex = dataIndex
-            while subWindowIndex < self.numberOfSubWindows and innerDataIndex < len(data):
+            while subWindowIndex < numberOfIntervals and innerDataIndex < len(data):
                 subWindowData = []
                 nextTimestamp = datetime.strptime(data[innerDataIndex]['EVENT_TIME'], self.TIMESTAMP_FORMAT)
 
@@ -95,7 +96,7 @@ class SlidingWindowStrategy(PredictionStrategy):
                 self.TIMESTAMP_FORMAT) < nextFirstEndSubWindowTimestamp:
                 dataIndex += 1
 
-            if len(windowData) >= self.numberOfSubWindows:
+            if len(windowData) >= numberOfIntervals:
                 windowedLogData.append(windowData)
 
         return windowedLogData
