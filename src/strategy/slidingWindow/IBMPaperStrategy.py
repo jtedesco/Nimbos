@@ -198,8 +198,6 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
         # Get the expected number of features per example, to make sure each example has the same number
         expectedNumberOfFeatures = (len(examples[0]) - self.numberOfSubWindows) \
             + ((self.numberOfSubWindows-1) * len(examples[0][0]))
-        print expectedNumberOfFeatures
-
 
         trainingFileLines = []
         for window in examples:
@@ -217,8 +215,6 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
             for featureIndex in xrange(self.numberOfSubWindows-1, len(window)-1):
                 feature = window[featureIndex]
                 features.append(feature)
-
-            print features
 
             # Handle the error case where
             if len(features) != expectedNumberOfFeatures:
@@ -238,8 +234,21 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
 
             # Build the text for this line of the training file
             featuresText = []
+            featureLabel = 1
             for featureIndex in xrange(0, len(features)):
-                featuresText.append('%d:%1.2f' % (featureIndex + 1, float(features[featureIndex])))
+                feature = features[featureIndex]
+                if type(feature) == type(tuple()):
+                    for subFeature in feature:
+                        if type(subFeature) == type(tuple()):
+                            for subSubFeature in subFeature:
+                                featuresText.append('%d:%1.2f' % (featureLabel, float(subSubFeature)))
+                                featureLabel += 1
+                        else:
+                            featuresText.append('%d:%1.2f' % (featureLabel, float(subFeature)))
+                            featureLabel += 1
+                else:
+                    featuresText.append('%d:%1.2f' % (featureLabel, float(feature)))
+                    featureLabel += 1
 
             trainingFileLine += ' '.join(featuresText)
             trainingFileLines.append(trainingFileLine)
