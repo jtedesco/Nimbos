@@ -59,6 +59,11 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
                     raise StrategyError(
                         'Error parsing windowed log data, found window with %d sub-windows!' % len(window))
 
+                # Maintains total severity counts for entire observation period
+                observationWindowEventCounts = {}
+                for key in self.severities:
+                    observationWindowEventCounts[key] = 0
+
                 # Iterate through each sub-window, skipping the last window (since the last is used for classification)
                 subWindowData = []
                 for subWindowIndex in xrange(0, len(window) - 1):
@@ -75,8 +80,9 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
                             raise  StrategyError(
                                 'Error parsing windowed log data, could not find %s field!' % self.severityKey)
 
-                        # Tally an event of this severity
+                        # Tally an event of this severity for this subwindow & the total count
                         eventCounts[logEvent[self.severityKey]] += 1
+                        observationWindowEventCounts[logEvent[self.severityKey]] += 1
 
                     # Append the counts for this sub-window
                     supportVector = []
@@ -91,8 +97,13 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
                         foundFatalEvent = True
                         break
 
+                # Create tuple of event level counts for entire observation period
+                observationPeriodCounts = []
+                for key in self.severities:
+                    observationPeriodCounts.append(observationWindowEventCounts[key])
+
                 # Add the training example
-                trainingData.append(tuple(subWindowData) + (foundFatalEvent,))
+                trainingData.append(tuple(subWindowData) + tuple(observationPeriodCounts) + (foundFatalEvent,))
 
             return trainingData
 
@@ -111,19 +122,32 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
             raise StrategyError('Error building training file content: no examples given!')
 
         # Get the expected number of features per example, to make sure each example has the same number
-        numberOfFeatures = (len(examples[0]) - 1) * len(examples[0][0])
+        expectedNumberOfFeatures = (len(examples[0]) - self.numberOfSubWindows) \
+            + ((self.numberOfSubWindows-1) * len(examples[0][0]))
+        print expectedNumberOfFeatures
+
 
         trainingFileLines = []
         for window in examples:
+
             # Take the counts from all sub-windows as features
             features = []
-            for subWindowIndex in xrange(0, len(window) - 1):
-                subWindow = window[subWindowIndex]
-                for entry in subWindow:
-                    features += [entry]
+            for subWindowIndex in xrange(0, self.numberOfSubWindows):
+                if subWindowIndex < len(window):
+                    subWindow = window[subWindowIndex]
+                    if type(subWindow) == type(tuple([])):
+                        for entry in subWindow:
+                            features.append(entry)
+
+            # Take all attributes from the observation window as a whole
+            for featureIndex in xrange(self.numberOfSubWindows-1, len(window)-1):
+                feature = window[featureIndex]
+                features.append(feature)
+
+            print features
 
             # Handle the error case where
-            if len(features) != numberOfFeatures:
+            if len(features) != expectedNumberOfFeatures:
                 raise StrategyError('Error building training file content: Invalid training data!')
 
             # Determine whether this is a positive or negative example

@@ -1,8 +1,8 @@
 from json import load
 import os
 import unittest
-from src.strategy.slidingWindow.EventLevelStrategy import EventLevelStrategy
 from src.strategy.StrategyError import StrategyError
+from src.strategy.slidingWindow.IBMPaperStrategy import IBMPaperStrategy
 
 __author__ = 'jon'
 
@@ -12,20 +12,21 @@ class IBMPaperStrategyTest(unittest.TestCase):
     """
 
     def setUp(self):
-        self.eventLevelSlidingWindowStrategy = EventLevelStrategy('TestData')
+        self.eventLevelSlidingWindowStrategy = IBMPaperStrategy('TestData')
+        self.eventLevelSlidingWindowStrategy6 = IBMPaperStrategy('TestData', numberOfSubWindows=6)
 
         # Parsed training data for five sub-window example
         self.fiveSubWindowTrainingData = [
-            ((2, 0, 1, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), True),
-            ((1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), False),
-            ((0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (0, 0, 0, 0), False)
+            ((2, 0, 1, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), 3, 3, 2, 0, True),
+            ((1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), 2, 3, 1, 1, False),
+            ((0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (0, 0, 0, 0), 1, 3, 0, 1, False)
         ]
 
         # Parsed training data for six sub-window example
         self.sixSubWindowTrainingData = [
-            ((2, 0, 1, 0), (0, 0, 0, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), True),
-            ((0, 0, 0, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), False),
-            ((1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (0, 0, 0, 0), False)
+            ((2, 0, 1, 0), (0, 0, 0, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), 3, 3, 2, 0, True),
+            ((0, 0, 0, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), 2, 3, 1, 1, False),
+            ((1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (0, 0, 0, 0), 2, 3, 1, 1, False)
         ]
         self.projectRoot = os.environ['PROJECT_ROOT']
 
@@ -165,7 +166,6 @@ class IBMPaperStrategyTest(unittest.TestCase):
         self.assertEqual(expectedTrainingFileContent, actualTrainingFileContent)
 
 
-
     def testBuildTrainingFileContentSixWindow(self):
 
         # Setup
@@ -173,7 +173,7 @@ class IBMPaperStrategyTest(unittest.TestCase):
         expectedTrainingFileContent = open(self.projectRoot + '/test/strategy/ibmPaperStrategy/trainingFile/SixSubWindows').read()
 
         # Test
-        actualTrainingFileContent = self.eventLevelSlidingWindowStrategy.buildDataFileContent(trainingData)
+        actualTrainingFileContent = self.eventLevelSlidingWindowStrategy6.buildDataFileContent(trainingData)
 
         # Verify
         self.assertEqual(expectedTrainingFileContent, actualTrainingFileContent)
