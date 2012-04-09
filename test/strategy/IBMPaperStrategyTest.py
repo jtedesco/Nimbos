@@ -29,6 +29,13 @@ class IBMPaperStrategyTest(unittest.TestCase):
                 (
                     (2, 0, 1, 0), (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0)
                 ),
+
+                # Event level count means
+                (0.75, 0.75, 0.50, 0.00),
+
+                # Event level count standard deviations
+                (0.83, 1.30, 0.50, 0.00),
+
                 True
             ),
             (
@@ -42,6 +49,13 @@ class IBMPaperStrategyTest(unittest.TestCase):
                 (
                     (1, 0, 1, 0), (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1)
                 ),
+
+                # Event level count means
+                (0.50, 0.75, 0.25, 0.25),
+
+                # Event level count standard deviations
+                (0.50, 1.30, 0.43, 0.43),
+
                 False
             ),
             (
@@ -55,6 +69,13 @@ class IBMPaperStrategyTest(unittest.TestCase):
                 (
                     (0, 3, 0, 0), (0, 0, 0, 0), (1, 0, 0, 1), (0, 0, 0, 0)
                 ),
+
+                # Event level count means
+                (0.25, 0.75, 0.00, 0.25),
+
+                # Event level count standard deviations
+                (0.43, 1.30, 0.00, 0.43),
+
                 False
             )
         ]
@@ -76,6 +97,13 @@ class IBMPaperStrategyTest(unittest.TestCase):
                     (0,3,0,0), (0,0,0,0), (0,0,0,0), (0,0,0,0), # Hours 13-16
                     (0,0,0,0), (0,0,0,0), (0,0,0,0), (0,0,0,0), # Hours 17-20
                 ),
+
+                # Event level count means
+                (),
+
+                # Event level count standard deviations
+                (),
+
                 True
             ),
             (
@@ -93,6 +121,13 @@ class IBMPaperStrategyTest(unittest.TestCase):
                     (0,0,0,0), (0,0,0,0), (0,0,0,0), (0,0,0,0), # Hours 17-20
                     (0,0,0,0), (0,0,0,1), (0,0,0,0), (1,0,0,0), # Hours 21-0 (next day)
                 ),
+
+                # Event level count means
+                (),
+
+                # Event level count standard deviations
+                (),
+
                 False
             ),
             (
@@ -110,6 +145,13 @@ class IBMPaperStrategyTest(unittest.TestCase):
                     (0,0,0,0), (0,0,0,1), (0,0,0,0), (1,0,0,0), # Hours 21-0 (next day)
                     (0,0,0,0), (0,0,0,0), (0,0,0,0), (0,0,0,0), # Hours 1-4 (next day)
                 ),
+
+                # Event level count means
+                (),
+
+                # Event level count standard deviations
+                (),
+
                 False
             )
         ]
