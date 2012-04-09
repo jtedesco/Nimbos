@@ -40,7 +40,7 @@ class EventLevelStrategy(SlidingWindowClassificationStrategy):
         self.dataSetName = dataSetName
 
 
-    def parseWindowedLogData(self, windowedLogData):
+    def parseWindowedLogData(self, windowedLogData, intervalWindowedLogData=None):
         """
           Helper function to parse the windowed log data (log data properly divided into sliding windows for learning)
             into training examples.
