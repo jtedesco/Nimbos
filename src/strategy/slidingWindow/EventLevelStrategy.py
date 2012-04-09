@@ -1,12 +1,10 @@
 from datetime import timedelta
-import os
-import subprocess
-from src.strategy.SlidingWindowStrategy import SlidingWindowStrategy
+from src.strategy.SlidingWindowClassificationStrategy import SlidingWindowClassificationStrategy
 from src.strategy.StrategyError import StrategyError
 
 __author__ = 'jon'
 
-class EventLevelStrategy(SlidingWindowStrategy):
+class EventLevelStrategy(SlidingWindowClassificationStrategy):
     """
       Class that holds prediction strategies based on a sliding window of log events. Specifically, this strategy
         uses SVM based on the sliding windows of intervals of several hours. Based on features of the last 4 windows,
@@ -22,6 +20,7 @@ class EventLevelStrategy(SlidingWindowStrategy):
 
     STRATEGY_NAME = 'EventLevelSlidingWindow'
 
+
     def __init__(self, dataSetName, windowDelta=timedelta(hours=5), numberOfSubWindows=5, severities=None,
                  severityKeyword=None, negativeLabels=True, failureKey=None, failureValues=None):
         super(EventLevelStrategy, self).__init__(windowDelta, numberOfSubWindows)
@@ -31,14 +30,14 @@ class EventLevelStrategy(SlidingWindowStrategy):
         self.failureKey = failureKey or self.severityKey
         self.failureValues = failureValues or {"FATAL", "FAILURE"}
 
+        self.negativeLabels = negativeLabels
+
         self.trainingFileName = dataSetName + ' - ' + EventLevelStrategy.STRATEGY_NAME + 'Training'
         self.modelFileName = dataSetName + ' - ' + EventLevelStrategy.STRATEGY_NAME + 'Model'
         self.predictionsInputFileName = dataSetName + ' - ' + EventLevelStrategy.STRATEGY_NAME + 'PredictionsIn'
         self.predictionsOutputFileName = dataSetName + ' - ' + EventLevelStrategy.STRATEGY_NAME + 'PredictionsOut'
 
         self.dataSetName = dataSetName
-
-        self.negativeLabels = negativeLabels
 
 
     def parseWindowedLogData(self, windowedLogData):
@@ -99,88 +98,6 @@ class EventLevelStrategy(SlidingWindowStrategy):
                 trainingData.append(tuple(subWindowData) + (foundFatalEvent,))
 
             return trainingData
-
-
-    def learn(self, examples):
-        """
-          Trains SVM light based on the given training examples. Assumes all training examples are in the proper format.
-
-            @param  examples    The training examples, given in the training data format, where each entry is a tuple of
-                                event severity counts for each sub-window, followed by T/F based on whether or not the
-                                last window had a fatal event
-        """
-
-        # Throw an exception if the 'scratch' training file already exists
-        if os.path.exists(self.trainingFileName):
-            raise IOError('Error training EventLevelSlidingWindow strategy: %s already exists!' % self.trainingFileName)
-
-        # Remove the model file if it already exists
-        if os.path.exists(self.modelFileName):
-            print "Removing SVM model file '%s'" % self.modelFileName
-            os.remove(self.modelFileName)
-
-
-        # Build the training file
-        trainingFileContent = self.buildDataFileContent(examples)
-        trainingFile = open(self.trainingFileName, 'w')
-        trainingFile.write(trainingFileContent)
-        trainingFile.close()
-
-        # Train a model based on the training file
-        subprocess.call('svm_learn "' + self.trainingFileName + '" "' + self.modelFileName + '"', shell=True)
-
-        # Read the learned model and store the string
-        modelFile = open(self.modelFileName)
-        self.model = modelFile.read()
-        modelFile.close()
-
-        # Cleanup
-        os.remove(self.trainingFileName)
-        os.remove(self.modelFileName)
-
-        # Return the model
-        return self.model
-
-
-    def predict(self, data):
-        """
-          Uses SVM light to predict the classification for the given features
-
-            @param   data   The data entry to classify, given as a list of data entries in training example format
-            @return A list of True/False, each entry representing the prediction for whether or not the next window will
-                    have a FATAL error (corresponding to entries in the data)
-        """
-
-        # Throw an exception if the 'scratch' training and/or test files already exist
-        if os.path.exists(self.predictionsInputFileName):
-            raise IOError(
-                'Error predicting with EventLevelSlidingWindow strategy: %s already exists!' % self.predictionsInputFileName)
-        if os.path.exists(self.predictionsOutputFileName):
-            raise IOError(
-                'Error predicting EventLevelSlidingWindow strategy: %s already exists!' % self.predictionsOutputFileName)
-
-        # Write the model file if it doesn't already exist
-        if not os.path.exists(self.modelFileName):
-            modelFile = open(self.modelFileName, 'w')
-            modelFile.write(self.model)
-            modelFile.close()
-
-
-        # Create the predictions input file (test data)
-        predictionsInputFileContent = self.buildDataFileContent(data)
-        predictionsInputFile = open(self.predictionsInputFileName, 'w')
-        predictionsInputFile.write(predictionsInputFileContent)
-        predictionsInputFile.close()
-
-
-        # Use SVM light to predict classifications for all data entries
-        subprocess.call('svm_classify "' + self.predictionsInputFileName + '" "' + self.modelFileName + '" "' +
-                        self.predictionsOutputFileName + '"', shell=True)
-
-        # Cleanup
-        os.remove(self.predictionsInputFileName)
-
-        return None
 
 
     def buildDataFileContent(self, examples):
