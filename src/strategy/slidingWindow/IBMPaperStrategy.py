@@ -15,6 +15,9 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
           - The distribution information for failures across the observation period
           - The inter-failure times
           - Number of times each entry data phrase occurred during the current period (semantic filter)
+
+        Note that in our implementation, we assume the sub-window delta (lower-case delta) evenly divides the window delta
+        (upper-case delta).
     """
 
     STRATEGY_NAME = 'IBMPaperStrategy'
