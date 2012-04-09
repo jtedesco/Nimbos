@@ -61,7 +61,7 @@ class IBMPaperStrategyTest(unittest.TestCase):
                 (0.50, 1.30, 0.43, 0.43),
 
                 # Number of intervals since last fatal event
-                0,
+                1,
 
                 False
             ),
@@ -84,7 +84,7 @@ class IBMPaperStrategyTest(unittest.TestCase):
                 (0.43, 1.30, 0.00, 0.43),
 
                 # Number of intervals since last fatal event
-                1,
+                2,
 
                 False
             )
@@ -142,7 +142,7 @@ class IBMPaperStrategyTest(unittest.TestCase):
                 (0.30, 0.65, 0.22, 0.22),
 
                 # Number of intervals since last fatal event
-                0,
+                1,
 
                 False
             ),
@@ -169,7 +169,7 @@ class IBMPaperStrategyTest(unittest.TestCase):
                 (0.30, 0.65, 0.22, 0.22),
 
                 # Number of intervals since last fatal event
-                1,
+                2,
 
                 False
             )

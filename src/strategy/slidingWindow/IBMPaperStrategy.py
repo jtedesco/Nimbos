@@ -1,3 +1,4 @@
+from IN import INT_MAX
 from datetime import timedelta
 from src.strategy.SlidingWindowClassificationStrategy import SlidingWindowClassificationStrategy
 from src.strategy.StrategyError import StrategyError
@@ -119,7 +120,19 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
         else:
             trainingData = []
 
+            # Find the indices of windows in which there was a fatal error in the prediction window
+            fatalErrorWindowIndices = []
+            for windowIndex in xrange(0, len(windowedLogData)):
+                if len(windowedLogData[windowIndex]) > 0:
+                    example = windowedLogData[windowIndex][-1]
+                    for event in example:
+                        if self.severityKey not in event:
+                            raise StrategyError('Error parsing windowed log data!')
+                        elif event[self.severityKey] in self.failureValues:
+                            fatalErrorWindowIndices.append(windowIndex)
+
             # Iterate through each window, each of which will consist of a training example
+            currentWindowIndex = 0
             for window, windowInterval in zip(windowedLogData, intervalWindowedLogData):
 
                 # Check that the windows evenly divide into window intervals
@@ -134,7 +147,6 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
                     for interval in windowInterval:
                         if event in interval:
                             interval.remove(event)
-
 
                 # Throw an exception if there is 1 or 0 sub-windows in a window --  the strategy doesn't make sense
                 if len(window) <= 1:
@@ -176,15 +188,34 @@ class IBMPaperStrategy(SlidingWindowClassificationStrategy):
                     means.append(round(severityCountsArray.mean(),2))
                     standardDeviations.append(round(severityCountsArray.std(),2))
 
+                # Find number of windows since the last fatal event
+                lastFatalWindowIndex = self.__findNextSmallerInList(currentWindowIndex, fatalErrorWindowIndices)
+                if lastFatalWindowIndex is None:
+                    windowsSinceLastFatal = INT_MAX
+                else:
+                    windowsSinceLastFatal = currentWindowIndex - lastFatalWindowIndex
+
                 # Add the training example
                 trainingData.append(tuple(subWindowData) + tuple(observationPeriodCounts) +(tuple(subWindowIntervalData),)
-                        + (tuple(means),) + (tuple(standardDeviations),) + (foundFatalEvent,))
+                        + (tuple(means), tuple(standardDeviations), windowsSinceLastFatal, foundFatalEvent))
+                currentWindowIndex += 1
 
             # Throw an exception if no training data could be parsed
             if len(trainingData) is 0:
                 raise StrategyError('Error parsing windowed log data!')
 
             return trainingData
+
+
+    def __findNextSmallerInList(self, value, list):
+        """
+          Helper function to find the next smaller element in a list
+            @param  value   The value for which to find the next smaller element in the list
+            @param  list    The list in which to find the next smaller element than 'value'
+        """
+
+        tempList = [t for t in list if t < value]
+        return max(tempList) if tempList else None
 
 
     def buildDataFileContent(self, examples):
