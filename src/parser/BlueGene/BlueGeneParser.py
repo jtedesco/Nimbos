@@ -42,11 +42,14 @@ def parse(logFilePath):
 
 def main():
     projectRoot = os.environ['PROJECT_ROOT']
-    log = parse(projectRoot + '/log/bgl.log')
-    print len(log)
-    summary = ParserUtil.summary(log)
-    print summary["CAT"]
-    return summary
+    log = parse(projectRoot + '/log/bg.log')
+
+    result = set()
+    for line in log:
+        for word in line["MESSAGE"].split(" "):
+            result.add(word)
+
+    print len(result)
 
 if __name__ == '__main__':
     main()

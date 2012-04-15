@@ -16,8 +16,8 @@ if __name__ == '__main__':
     experiments = [
 #         EventLevelStrategy('PosNeg5SubWindows5Hours-Predict-KERNRTSP', severities=categories, severityKeyword="CAT", failureValues=set(["KERNRTSP"])),
 #         EventLevelStrategy('PosNeg5SubWindows5Hours-Predict-KERNMNTF', severities=categories, severityKeyword="CAT", failureValues=set(["KERNMNTF"])),
-         RandomizedEventLevelStrategy('RandomizedPosNeg5SubWindows5Hours-Predict-KERNRTSP', severities=categories, severityKeyword="CAT", failureValues=set(["KERNRTSP"])),
-         RandomizedEventLevelStrategy('RandomizedPosNeg5SubWindows5Hours-NewSeverities', severities=["INFO", "FAILURE", "SEVERE", "WARNING", "ERROR", "FATAL"], failureValues=set(["FATAL"])),
+#         RandomizedEventLevelStrategy('RandomizedPosNeg5SubWindows5Hours-Predict-KERNRTSP', severities=categories, severityKeyword="CAT", failureValues=set(["KERNRTSP"])),
+         EventLevelStrategy('PosNeg5SubWindows12Hours', windowDelta=timedelta(hours=12) , severities=["INFO", "WARNING", "SEVERE", "ERROR", "FATAL",  "FAILURE"], failureValues=set(["FATAL", "FAILURE"])),
 #        EventLevelStrategy('PosNeg3SubWindows5Hours', numberOfSubWindows=3),
 #        EventLevelStrategy('PosNeg7SubWindows5Hours', numberOfSubWindows=7),
 #        EventLevelStrategy('PosNeg5SubWindows3Hours', windowDelta=timedelta(hours=3)),
